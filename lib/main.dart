@@ -1,4 +1,5 @@
 import 'principal_views/principal_screen.dart';
+import 'principal_views/routine_details_screen.dart';
 import 'principal_views/routines_screen.dart';
 import 'package:flutter/material.dart';
 import 'principal_views/login_signup_screen.dart';
@@ -10,11 +11,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MyLittleProgress',
-      home: PrincipalPage(),
+      home: RoutineDetailsPage(),
       routes: {
-         PrincipalPage.routeName: (ctx) => PrincipalPage(),
-               RoutinesPage.routeName: (ctx) => RoutinesPage(),
-   
+        PrincipalPage.routeName: (ctx) => PrincipalPage(),
+        RoutinesPage.routeName: (ctx) => RoutinesPage(),
+        RoutineDetailsPage.routeName: (ctx) => RoutineDetailsPage(),
       },
     );
   }

@@ -11,7 +11,7 @@ class LoginSignupPage extends StatefulWidget {
 }
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
-  static const routeName = '/auth';
+  static const routeName = '/auth-page';
   
   bool _isLoginForm = false;
   bool _isLogin = false;
