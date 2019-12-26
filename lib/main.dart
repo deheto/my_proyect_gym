@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MyLittleProgress',
-      home: RoutineDetailsPage(),
+      home: PrincipalPage(),
       routes: {
         PrincipalPage.routeName: (ctx) => PrincipalPage(),
         RoutinesPage.routeName: (ctx) => RoutinesPage(),

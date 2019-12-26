@@ -1,13 +1,13 @@
+import '../models/routine.dart';
+import '../principal_views/routine_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RoutineItem extends StatelessWidget {
-  final String type;
-  final DateTime date;
+  final Routine routine;
 
   RoutineItem({
-    @required this.type,
-    @required this.date,
+    @required this.routine,
   });
 
   @override
@@ -20,15 +20,20 @@ class RoutineItem extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(
-          type,
+          routine.type,
           style: Theme.of(context).textTheme.title,
         ),
         subtitle: Text(
-          DateFormat.yMMMEd().format(date),
+          DateFormat.yMMMEd().format(routine.date),
         ),
         trailing: IconButton(
           icon: Icon(Icons.forward),
-          onPressed: null,
+          onPressed: () {
+            Navigator.of(context)
+                .pushNamed(RoutineDetailsPage.routeName, arguments: {
+              'routine': routine,
+            });
+          },
         ),
       ),
     );

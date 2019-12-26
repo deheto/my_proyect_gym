@@ -1,114 +1,161 @@
-import 'package:denis_proyect/models/series.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
+import '../custom_widgets/add_serie.dart';
 import '../custom_widgets/exercise_item.dart';
 import '../models/exercise.dart';
-import 'package:flutter/material.dart';
+import '../models/routine.dart';
+import '../models/series.dart';
+import '../models/unity_weight.dart';
 
 class RoutineDetailsPage extends StatefulWidget {
-  // final List<Exercise> listExercise;
 
   static const routeName = '/routine-details-page';
 
-  // RoutineDetailsPage(this.listExercise);
 
   @override
   _RoutineDetailsPageState createState() => _RoutineDetailsPageState();
 }
 
 class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
-  final List<Exercise> listExercise = [
-    Exercise(
-      id: 'd3a',
-      name: 'Sentadilla',
-      listSeries: [
-        Series(
-          id: '23',
-          weigth: 15,
-          repTotal: 3,
-          unitWeight: 'lbs',
-        ),
-        Series(
-          id: '3',
-          weigth: 31,
-          repTotal: 32,
-          unitWeight: 'lbs',
-        ),
-        Series(
-          id: '1',
-          weigth: 32,
-          repTotal: 1,
-          unitWeight: 'kg',
-        ),
-      ],
-    ),
-    Exercise(
-      id: 'pb3',
-      name: 'Press Banca',
-      listSeries: [
-        Series(
-          id: '5',
-          weigth: 32,
-          repTotal: 64,
-          unitWeight: 'lb',
-        ),
-        Series(
-          id: '6',
-          weigth: 315,
-          repTotal: 32,
-          unitWeight: 'kg',
-        ),
-        Series(
-          id: '7',
-          weigth: 2,
-          repTotal: 31,
-          unitWeight: 'kg',
-        ),
-      ],
-    ),
-  ];
+
+
+  TextEditingController _nameExerciseController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+     final routeArgs =
+       ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+     final routine = routeArgs['routine'] as Routine;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NOMBRE DE LA RUTINA'),
+        title: Text('${routine.type}, ${ DateFormat.yMMMd().format(routine.date)}' ),
       ),
 
       /*
       * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
       */
       body: Container(
-        height: 500,
+        height: 525,
         child: ListView.builder(
           padding: const EdgeInsets.all(8),
           itemBuilder: (ctx, index) {
-            return Dismissible(
-              key: ValueKey(listExercise[index].id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Theme.of(context).errorColor,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                    size: 35,
-                  ),
+            return Slidable(
+              key: Key(routine.exercises[index].name),
+              actionPane: SlidableDrawerActionPane(),
+              actionExtentRatio: 0.25,
+              secondaryActions: <Widget>[
+                IconSlideAction(
+                  caption: 'Eliminar',
+                  color: Colors.red,
+                  icon: Icons.delete,
+                  onTap: () => _confirmDeleteExercise(index, routine),
                 ),
-                alignment: Alignment.centerRight,
-              ),
-              onDismissed: (_) {
-                setState(() {
-                  listExercise.removeAt(index);
-                });
-              },
-              child: ExerciseItem(listExercise[index]),
+                IconSlideAction(
+                  caption: 'Agregar serie',
+                  color: Colors.green,
+                  icon: Icons.add,
+                  onTap: () => _addSerie(routine.exercises[index].id),
+                ),
+              ],
+              closeOnScroll: false,
+              child: routine.exercises[index] == null
+                  ? null
+                  : ExerciseItem(routine.exercises[index], index),
             );
           },
           addAutomaticKeepAlives: false,
-          itemCount: listExercise.length,
+          itemCount: routine.exercises.length,
         ),
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => _addExercise(routine),
+          elevation: 5,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  void _addSerie(String idExercise) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return GestureDetector(
+          onTap: () {},
+          child: AddSerie(idExercise),
+          behavior: HitTestBehavior.opaque,
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmDeleteExercise(int index, Routine routine) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(routine.exercises[index].name),
+          content: Text('¿Desea realmente eliminarlo?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancelar'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            FlatButton(
+                child: Text('Eliminar'),
+                onPressed: () {
+                  setState(() {
+                    routine.exercises.removeAt(index);
+                  });
+                  Navigator.pop(context);
+                  // Scaffold.of(context).showSnackBar(SnackBar(
+                  //     content: Text("${listExercise[index].name} eliminado.")));
+                }),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _addExercise(Routine routine) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Nombre del ejercicio'),
+            content: TextField(
+              controller: _nameExerciseController,
+              decoration:
+                  InputDecoration(hintText: "Ejemplo: Sentadilla Bulgara"),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Cancelar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text('Agregar'),
+                onPressed: () {
+                  _createExercise(routine);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _createExercise(Routine routine) {
+    setState(() {
+      routine.exercises.add(Exercise(routineID: routine.id, name: _nameExerciseController.text));
+    });
   }
 }

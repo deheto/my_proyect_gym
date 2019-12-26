@@ -4,17 +4,19 @@ import 'series.dart';
 
 class Exercise {
 
+  final String routineID;
   final String id;
   final String name;
-  final List<Series> listSeries;
+  List<Series> listSeries = [];
 
   List<Series> get series {
     return listSeries;
   }
 
   Exercise({
-    @required this.id,
+    this.id,
+     @required this.routineID,
     @required this.name,
-    @required this.listSeries,
+    this.listSeries,
   });
 }

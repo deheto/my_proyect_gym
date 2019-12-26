@@ -1,0 +1,4 @@
+enum UnityWeight { 
+   kgs, 
+   lbs, 
+}
