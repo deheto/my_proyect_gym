@@ -5,32 +5,25 @@ import '../custom_widgets/add_serie.dart';
 import '../custom_widgets/exercise_item.dart';
 import '../models/exercise.dart';
 import '../models/routine.dart';
-import '../models/series.dart';
-import '../models/unity_weight.dart';
 
 class RoutineDetailsPage extends StatefulWidget {
-
   static const routeName = '/routine-details-page';
-
 
   @override
   _RoutineDetailsPageState createState() => _RoutineDetailsPageState();
 }
 
 class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
-
-
   TextEditingController _nameExerciseController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-     final routeArgs =
-       ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
-     final routine = routeArgs['routine'] as Routine;
+    final routine = ModalRoute.of(context).settings.arguments as Routine;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${routine.type}, ${ DateFormat.yMMMd().format(routine.date)}' ),
+        title:
+            Text('${routine.type}, ${DateFormat.yMMMd().format(routine.date)}'),
       ),
 
       /*
@@ -155,7 +148,8 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
 
   void _createExercise(Routine routine) {
     setState(() {
-      routine.exercises.add(Exercise(routineID: routine.id, name: _nameExerciseController.text));
+      routine.exercises.add(
+          Exercise(routineID: routine.id, name: _nameExerciseController.text));
     });
   }
 }

@@ -86,10 +86,7 @@ class RoutinesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rutinas'),
-      ),
-
+  
       /*
       * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
       */

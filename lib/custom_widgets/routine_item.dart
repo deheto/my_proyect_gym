@@ -30,9 +30,9 @@ class RoutineItem extends StatelessWidget {
           icon: Icon(Icons.forward),
           onPressed: () {
             Navigator.of(context)
-                .pushNamed(RoutineDetailsPage.routeName, arguments: {
-              'routine': routine,
-            });
+                .pushNamed(RoutineDetailsPage.routeName, arguments: 
+             routine,
+            );
           },
         ),
       ),

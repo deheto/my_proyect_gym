@@ -1,57 +1,61 @@
-
+import '../custom_widgets/main_drawer.dart';
 import '../principal_views/routines_screen.dart';
 import 'package:flutter/material.dart';
 
-
 class PrincipalPage extends StatefulWidget {
-
-   static const routeName = '/principal-page';
-
+  static const routeName = '/principal-page';
 
   @override
   _StatePrincipalPage createState() => _StatePrincipalPage();
 }
 
 class _StatePrincipalPage extends State<PrincipalPage> {
-  int _selectedIndex = 0;
-  final _pageOptions = [
-    RoutinesPage(),
-
+  final List<Map<String, Object>> _pages = [
+    {
+      'page': RoutinesPage(),
+      'title': 'Rutinas',
+    },
+    {
+      'page': RoutinesPage(),
+      'title': 'Rutinas',
+    },
   ];
 
-  void _onItemTapped(int index) {
+  int _selectPageIndex = 0;
+
+  void _selectPage(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectPageIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pageOptions[_selectedIndex],
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-            textTheme: Theme.of(context).textTheme.copyWith(
-                caption: TextStyle(color: Theme.of(context).primaryColor))),
-        child: BottomNavigationBar(
-          items: itemsListButtonBar,
-          currentIndex: _selectedIndex,
-          selectedItemColor: Theme.of(context).accentColor,
-          onTap: _onItemTapped,
+      appBar: AppBar(
+        title: Text(
+          _pages[_selectPageIndex]['title'],
         ),
+      ),
+      drawer: MainDrawer(),
+      body: _pages[_selectPageIndex]['page'],
+      bottomNavigationBar: BottomNavigationBar(
+        // unselectedItemColor: Colors.red,
+        // selectedItemColor: Theme.of(context).accentColor,
+        onTap: _selectPage,
+        currentIndex: _selectPageIndex,
+        backgroundColor: Theme.of(context).primaryColor,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            title: Text('Historial'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            title: Text('Historial'),
+          )
+        ],
       ),
     );
   }
-
-  static const List<BottomNavigationBarItem> itemsListButtonBar =
-      <BottomNavigationBarItem>[
-    BottomNavigationBarItem(
-      icon: Icon(Icons.fitness_center),
-      title: Text('Entrenamiento'),
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.local_dining),
-      title: Text('Dieta'),
-    ),
-  ];
 }
