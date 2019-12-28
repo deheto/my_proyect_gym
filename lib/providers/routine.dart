@@ -6,14 +6,20 @@ import 'package:flutter/foundation.dart';
 class Routine with ChangeNotifier{
   final String id;
   final DateTime date;
-  final String type;
+  final String name;
   List<Exercise> exercises = [];
 
   Routine({
-    this.exercises,
     @required this.id,
     @required this.date,
-    @required this.type,
+    @required this.name,
+  });
+
+  Routine.fromDB({
+    @required this.exercises,
+    @required this.id,
+    @required this.date,
+    @required this.name,
   });
 
   void addExerciseToRoutine(String nameExercise) {

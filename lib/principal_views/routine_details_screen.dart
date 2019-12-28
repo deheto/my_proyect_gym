@@ -29,9 +29,9 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text('${routine.type}, ${DateFormat.yMMMd().format(routine.date)}'),
+            Text('${routine.name}, ${DateFormat.yMMMd().format(routine.date)}'),
       ),
-      drawer: MainDrawer(),
+      // drawer: MainDrawer(),
       /*
       * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
       */

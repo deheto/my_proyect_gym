@@ -29,7 +29,7 @@ class RoutineItem extends StatelessWidget {
           ),
         ),
         title: Text(
-          loadedRoutine.type,
+          loadedRoutine.name,
           style: Theme.of(context).textTheme.title,
         ),
         subtitle: Text(
@@ -38,7 +38,7 @@ class RoutineItem extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(Icons.forward),
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed(
+            Navigator.of(context).pushNamed(
               RoutineDetailsPage.routeName,
               arguments: loadedRoutine.id,
             );

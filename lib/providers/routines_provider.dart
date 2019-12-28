@@ -1,15 +1,14 @@
 import '../providers/routine.dart';
-
 import '../models/unity_weight.dart';
-
 import '../providers/exercise.dart';
-
 import '../models/series.dart';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 
 class RoutinesProvider with ChangeNotifier {
   List<Routine> _routines = [
-    Routine(
+    Routine.fromDB(
       exercises: [
         Exercise.fromDB(
           routineID: 'r2',
@@ -40,11 +39,11 @@ class RoutinesProvider with ChangeNotifier {
           ],
         ),
       ],
-      type: 'Pierna',
+      name: 'Pierna',
       date: DateTime.now(),
       id: 'd2',
     ),
-    Routine(
+    Routine.fromDB(
       exercises: [
         Exercise.fromDB(
           routineID: 'r1',
@@ -75,7 +74,7 @@ class RoutinesProvider with ChangeNotifier {
           ],
         ),
       ],
-      type: 'Torso',
+      name: 'Torso',
       date: DateTime.now(),
       id: 'p1',
     ),
@@ -89,5 +88,29 @@ class RoutinesProvider with ChangeNotifier {
     return _routines.firstWhere((rout) => rout.id == id);
   }
 
- 
+  Future<void> addRoutine(String name, DateTime date) async {
+    const url = 'https://gym-proyect.firebaseio.com/routines';
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'name': name,
+            'date': date.toString(),
+          },
+        ),
+      );
+
+      _routines.add(Routine(
+        date: date,
+        id: json.decode(response.body)['name'],
+        name: name,
+      ));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+  }
 }

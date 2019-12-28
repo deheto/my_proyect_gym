@@ -19,7 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.15.8  
+  intl: ^0.15.8
+  http: ^0.12.0+3  
   provider: ^4.0.0
   flutter_slidable: "^0.5.4"
   enum_to_string: ^1.0.8
