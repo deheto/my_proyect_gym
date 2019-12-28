@@ -1,10 +1,13 @@
+import '../providers/exercise.dart';
+
 import '../models/unity_weight.dart';
 import 'package:flutter/material.dart';
 
 class AddSerie extends StatefulWidget {
-   final String exerciseID;
+  
+  final Exercise exercise;
 
-  AddSerie(this.exerciseID);
+  AddSerie(this.exercise);
 
   @override
   _AddSerieState createState() => _AddSerieState();
@@ -17,13 +20,15 @@ class _AddSerieState extends State<AddSerie> {
   UnityWeight unityWeight = UnityWeight.lbs;
 
   void _submitData() {
-    final weight = _weightController.text;
-    final reps = _repTotalesController.text;
+    final weight = double.parse(_weightController.text);
+    final reps = int.parse( _repTotalesController.text);
 
-    if (weight.isEmpty || reps.isEmpty) {
+    if (weight == null || reps == null) {
       return;
     }
 
+    widget.exercise.addSerieToExercise(widget.exercise.id, null, weight, reps, unityWeight);
+    
     Navigator.of(context).pop();
   }
 

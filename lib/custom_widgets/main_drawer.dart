@@ -1,6 +1,20 @@
+import '../principal_views/principal_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainDrawer extends StatelessWidget {
+  Widget buildListTitle(String title, IconData icon, Function function) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        size: 26,
+      ),
+      title: Text(
+        title,
+      ),
+      onTap: function,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -16,14 +30,17 @@ class MainDrawer extends StatelessWidget {
           SizedBox(
             height: 20,
           ),
-          ListTile(
-            leading: Icon(
-              Icons.restaurant,
-              size: 26,
-            ),
-            title: Text(
-              'Comidas',
-            ),
+          buildListTitle(
+            'Home',
+            Icons.home,
+            () {
+               Navigator.of(context).pushReplacementNamed(PrincipalPage.routeName);
+            },
+          ),
+          buildListTitle(
+            'Historial',
+            Icons.hdr_on,
+            () {},
           ),
         ],
       ),

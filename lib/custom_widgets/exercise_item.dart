@@ -1,13 +1,10 @@
+import 'dart:math';
+import 'package:provider/provider.dart';
 import '../custom_widgets/series_item.dart';
-import '../models/exercise.dart';
+import '../providers/exercise.dart';
 import 'package:flutter/material.dart';
 
 class ExerciseItem extends StatefulWidget {
-  final Exercise exercise;
-  final int numberExercise;
-
-  ExerciseItem(this.exercise,this.numberExercise);
-
   @override
   _ExerciseItemState createState() => _ExerciseItemState();
 }
@@ -21,9 +18,16 @@ class _ExerciseItemState extends State<ExerciseItem> {
     });
   }
 
+  // void _deleteSerie(String serieID) {
+  //   setState(() {
+
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
-    var number = 1 + widget.numberExercise;
+    final exercise = Provider.of<Exercise>(context);
+
     return Column(
       children: <Widget>[
         Card(
@@ -33,16 +37,17 @@ class _ExerciseItemState extends State<ExerciseItem> {
             horizontal: 5,
           ),
           child: ListTile(
-           leading: CircleAvatar(
-            child: Text(number.toString()),
-
-           ), 
+            leading: CircleAvatar(
+              child: exercise.listSeries != null
+                  ? Text(exercise.listSeries.length.toString())
+                  : Text('0'),
+            ),
             title: Text(
-              widget.exercise.name,
+              exercise.name,
               style: Theme.of(context).textTheme.title,
             ),
             subtitle: Text(
-              'Peso Total Levantado: 500kg',
+              'Peso Total Levantado: ${exercise.totalWeight()}',
             ),
             trailing: IconButton(
               icon: _updateIcon(),
@@ -51,27 +56,24 @@ class _ExerciseItemState extends State<ExerciseItem> {
           ),
         ),
         showDetails
-            ? widget.exercise.listSeries != null
+            ? exercise.listSeries != null && exercise.listSeries.length != 0
                 ? Container(
                     margin: EdgeInsets.symmetric(
                       vertical: 0,
                       horizontal: 5,
                     ),
-                    height: 65 * widget.exercise.listSeries.length.toDouble(),
+                    height: min(exercise.listSeries.length.toDouble() * 20.0 + 100, 180),
                     color: Colors.white10,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(4),
-                      itemBuilder: (ctx, index) {
-                        return SeriesItem(
-                          repTotal: widget.exercise.listSeries[index].repTotal,
-                          id: widget.exercise.listSeries[index].id,
-                          weigth: widget.exercise.listSeries[index].weigth,
-                          unityWeight:
-                              widget.exercise.listSeries[index].unityWeight,
-                        );
-                      },
+                      itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+                        value: exercise,
+                        child: SeriesItem(
+                          index: index,
+                        ),
+                      ),
                       addAutomaticKeepAlives: false,
-                      itemCount: widget.exercise.listSeries.length,
+                      itemCount: exercise.listSeries.length,
                     ),
                   )
                 : Center(

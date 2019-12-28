@@ -1,10 +1,14 @@
+import 'package:denis_proyect/providers/exercise.dart';
+
+import '../providers/routine.dart';
+import '../providers/routines_provider.dart';
+import 'package:provider/provider.dart';
+import '../custom_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import '../custom_widgets/add_serie.dart';
 import '../custom_widgets/exercise_item.dart';
-import '../models/exercise.dart';
-import '../models/routine.dart';
 
 class RoutineDetailsPage extends StatefulWidget {
   static const routeName = '/routine-details-page';
@@ -18,14 +22,16 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final routine = ModalRoute.of(context).settings.arguments as Routine;
+    final routineID = ModalRoute.of(context).settings.arguments as String;
+    final routine = Provider.of<RoutinesProvider>(context, listen: false)
+        .findRoutineByID(routineID);
 
     return Scaffold(
       appBar: AppBar(
         title:
             Text('${routine.type}, ${DateFormat.yMMMd().format(routine.date)}'),
       ),
-
+      drawer: MainDrawer(),
       /*
       * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
       */
@@ -33,8 +39,9 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
         height: 525,
         child: ListView.builder(
           padding: const EdgeInsets.all(8),
-          itemBuilder: (ctx, index) {
-            return Slidable(
+          itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+            value: routine.exercises[index],
+            child: Slidable(
               key: Key(routine.exercises[index].name),
               actionPane: SlidableDrawerActionPane(),
               actionExtentRatio: 0.25,
@@ -49,15 +56,15 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                   caption: 'Agregar serie',
                   color: Colors.green,
                   icon: Icons.add,
-                  onTap: () => _addSerie(routine.exercises[index].id),
+                  onTap: () => _addSerie(routine.exercises[index]),
                 ),
               ],
               closeOnScroll: false,
-              child: routine.exercises[index] == null
-                  ? null
-                  : ExerciseItem(routine.exercises[index], index),
-            );
-          },
+              child: routine.exercises.length <= 0 
+                  ? Center()
+                  : ExerciseItem(),
+            ),
+          ),
           addAutomaticKeepAlives: false,
           itemCount: routine.exercises.length,
         ),
@@ -74,13 +81,13 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     );
   }
 
-  void _addSerie(String idExercise) {
+  void _addSerie(Exercise exercise) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
         return GestureDetector(
           onTap: () {},
-          child: AddSerie(idExercise),
+          child: AddSerie(exercise),
           behavior: HitTestBehavior.opaque,
         );
       },
@@ -148,8 +155,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
 
   void _createExercise(Routine routine) {
     setState(() {
-      routine.exercises.add(
-          Exercise(routineID: routine.id, name: _nameExerciseController.text));
+      routine.addExerciseToRoutine(_nameExerciseController.text);
     });
   }
 }
