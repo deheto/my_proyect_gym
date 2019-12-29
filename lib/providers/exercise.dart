@@ -28,24 +28,26 @@ class Exercise with ChangeNotifier {
     @required this.name,
   });
 
-  Future<void> addSerieToExercise(String routineID, String exerciseID,
+  void addSerie(Series serie){
+    listSeries.add(serie);
+  }
+
+  Future<void> addSerieToExercise( String exerciseID,
       double weigth, int repTotal, UnityWeight unityWeight) async {
     final url =
-        'https://gym-proyect.firebaseio.com/routines/$routineID/$exerciseID.json';
+        'https://gym-proyect.firebaseio.com/series.json';
 
     try {
       final response = await http.post(
         url,
-        body: json.encode({
-          'series': {
+        body: json.encode({ 
             'exerciseID': exerciseID,
             'weigth': weigth.toString(),
             'repTotal': repTotal.toString(),
             'unityWeight': EnumToString.parse(unityWeight),
-          }
         }),
       );
-      print(json.decode(response.body));
+      // print(json.decode(response.body));
       listSeries.add(Series(
           exerciseID: exerciseID,
           id: json.decode(response.body)['name'],

@@ -27,7 +27,7 @@ class _AddSerieState extends State<AddSerie> {
       return;
     }
 
-    widget.exercise.addSerieToExercise(widget.exercise.routineID,widget.exercise.id, weight, reps, unityWeight);
+    widget.exercise.addSerieToExercise(widget.exercise.id, weight, reps, unityWeight);
     
     Navigator.of(context).pop();
   }
