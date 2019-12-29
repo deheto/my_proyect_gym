@@ -15,19 +15,17 @@ class RoutinesListView extends StatelessWidget {
       * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
       */
 
-    final routinesData = Provider.of<RoutinesProvider>(context);
-    final routines = routinesData.routines;
-
     return Container(
       height: 500,
-      child: ListView.builder(
+      child: Consumer<RoutinesProvider>(builder: (ctx, routinesData,child ) => ListView.builder(
         padding: const EdgeInsets.all(8),
         itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
-       value: routines[index],
+       value: routinesData.routines[index],
           child: RoutineItem(), 
         ),
         addAutomaticKeepAlives: false,
-        itemCount: routines.length,
+        itemCount: routinesData.routines.length,
+      ),
       ),
     );
   }

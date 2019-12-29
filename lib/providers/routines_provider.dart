@@ -1,4 +1,5 @@
 import 'package:denis_proyect/models/htpp_exception.dart';
+import 'package:denis_proyect/providers/exercise.dart';
 
 import '../providers/routine.dart';
 import 'dart:convert';
@@ -7,46 +8,49 @@ import 'package:http/http.dart' as http;
 
 class RoutinesProvider with ChangeNotifier {
   List<Routine> _routines = [
-      // Routine.fromDB(
-      //   Routine.getList: [
-      //     Exercise.fromDB(
-      //       routineID: 'r2',
-      //       id: 'd3a',
-      //       name: 'Sentadilla',
-      //       listSeries: [
-      //         Series(
-      //           exerciseID: 'd3a',
-      //           id: '23',
-      //           weigth: 15,
-      //           repTotal: 3,
-      //           unityWeight: UnityWeight.lbs,
-      //         ),
-      //         Series(
-      //           exerciseID: 'd3a',
-      //           id: '3',
-      //           weigth: 31,
-      //           repTotal: 32,
-      //           unityWeight: UnityWeight.lbs,
-      //         ),
-      //         Series(
-      //           exerciseID: 'd3a',
-      //           id: '1',
-      //           weigth: 32,
-      //           repTotal: 1,
-      //           unityWeight: UnityWeight.lbs,
-      //         ),
-      //       ],
-      //     ),
-      //   ],
-      //   name: 'Pierna',
-      //   date: DateTime.now(),
-      //   id: 'd2',
-      // ),
- 
+    // Routine.fromDB(
+    //   Routine.getList: [
+    //     Exercise.fromDB(
+    //       routineID: 'r2',
+    //       id: 'd3a',
+    //       name: 'Sentadilla',
+    //       listSeries: [
+    //         Series(
+    //           exerciseID: 'd3a',
+    //           id: '23',
+    //           weigth: 15,
+    //           repTotal: 3,
+    //           unityWeight: UnityWeight.lbs,
+    //         ),
+    //         Series(
+    //           exerciseID: 'd3a',
+    //           id: '3',
+    //           weigth: 31,
+    //           repTotal: 32,
+    //           unityWeight: UnityWeight.lbs,
+    //         ),
+    //         Series(
+    //           exerciseID: 'd3a',
+    //           id: '1',
+    //           weigth: 32,
+    //           repTotal: 1,
+    //           unityWeight: UnityWeight.lbs,
+    //         ),
+    //       ],
+    //     ),
+    //   ],
+    //   name: 'Pierna',
+    //   date: DateTime.now(),
+    //   id: 'd2',
+    // ),
   ];
 
-  List<Routine> get routines {
+  List<Routine> get copyRoutines {
     return [..._routines];
+  }
+
+  List<Routine> get routines {
+    return _routines;
   }
 
   Routine findRoutineByID(String id) {
@@ -56,27 +60,62 @@ class RoutinesProvider with ChangeNotifier {
   Future<void> getRoutinesFromFireBase() async {
     const url = 'https://gym-proyect.firebaseio.com/routines.json';
 
- 
+    print('LLAMA AL METODO 2 VECES');
+
+    final response = await http.get(url);
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final List<Routine> tempList = [];
+
+    if (data == null) {
+      throw HttpException('No hay rutinas creadas.');
+    }
+
+    print(json.decode(response.body));
+
+    data.forEach((routineID, routineData) {
+      tempList.add(Routine(
+        id: routineID,
+        date: DateTime.parse(routineData['date']),
+        name: routineData['name'],
+      ));
+    });
+
+    await _fillRoutinesExercises(tempList);
+
+    _routines = tempList;
+    notifyListeners();
+  }
+
+  Future<void> _fillRoutinesExercises(List<Routine> tempList) async {
+
+
+      const url = 'https://gym-proyect.firebaseio.com/exercises.json';
+
       final response = await http.get(url);
 
       final data = json.decode(response.body) as Map<String, dynamic>;
-      final List<Routine> tempList = [];
 
       if (data == null){
          throw HttpException('No hay rutinas creadas.');
       }
 
-      data.forEach((routineID, routineData) {
-        tempList.add(Routine(
-          id: routineID,
-          date: DateTime.parse(routineData['date']),
-          name: routineData['name'],
-        ));
+      print(json.decode(response.body));
+
+      data.forEach((exerciseID, exerciseData) {
+
+          final routine =  tempList.firstWhere((rout) => rout.id == exerciseData['routineID']);
+        
+        if (routine != null){
+          routine.fillExercises(Exercise(
+            id: exerciseID,
+            name: exerciseData['name'],
+            routineID: exerciseData['routineID'],
+          ));
+        }
+
       });
 
-      _routines = tempList;
-      notifyListeners();
-  
   }
 
   Future<void> addRoutine(String name, DateTime date) async {
@@ -98,6 +137,8 @@ class RoutinesProvider with ChangeNotifier {
         id: json.decode(response.body)['name'],
         name: name,
       ));
+
+      
       notifyListeners();
     } catch (error) {
       print(error);

@@ -31,17 +31,21 @@ class Routine with ChangeNotifier {
     return _exercises.length;
   }
 
+  void fillExercises(Exercise exercise) {
+    _exercises.add(exercise);
+  }
+
   Future<void> addExerciseToRoutine(String nameExercise) async {
-    final url = 'https://gym-proyect.firebaseio.com/routines/$id.json';
+    const url = 'https://gym-proyect.firebaseio.com/exercises.json';
 
     try {
       final response = await http.post(
         url,
         body: json.encode({
-          'exercises': {
+        
             'routineID': id,
             'name': nameExercise,
-          }
+         
         }),
       );
 

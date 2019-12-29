@@ -13,27 +13,44 @@ class RoutinesPage extends StatefulWidget {
 }
 
 class _RoutinesPageState extends State<RoutinesPage> {
-  var _isLoading = false;
-  var _noRoutines = false;
+
   final _nameRoutineController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _noRoutines
-          ? Center(
-              child: Text(
-                'No tienes rutinas agregadas.',
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-            )
-          : _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : RoutinesListView(),
+      body: FutureBuilder(
+          future: Provider.of<RoutinesProvider>(context, listen: false)
+              .getRoutinesFromFireBase(),
+          builder: (ctx, dataSnapshot) {
+            if (dataSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              if (dataSnapshot.error
+                  .toString()
+                  .contains('No hay rutinas creadas.')) {
+                return Center(
+                  child: Text(
+                    'No tienes rutinas agregadas.',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                );
+              }
+
+              if (dataSnapshot.error != null) {
+                return Center(child: Text('Ocurrio un error.'));
+
+                /***
+                 * !!! AÑADIR MA
+                 * 
+                 */
+              } else {
+                return RoutinesListView();
+              }
+            }
+          }),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
@@ -46,26 +63,6 @@ class _RoutinesPageState extends State<RoutinesPage> {
     );
   }
 
-  @override
-  void initState() {
-    _isLoading = true;
-    Provider.of<RoutinesProvider>(context, listen: false)
-        .getRoutinesFromFireBase()
-        .then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    }).catchError((error) {
-   
-        setState(() {
-          _noRoutines = true;
-        });
-      
-    });
-
-    super.initState();
-  }
-
   Future<void> _saveRoutine() async {
     try {
       await Provider.of<RoutinesProvider>(context).addRoutine(
@@ -76,7 +73,7 @@ class _RoutinesPageState extends State<RoutinesPage> {
       await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text('Ocurrió un erorr.'),
+          title: Text('Ocurrió un error.'),
           content: Text(error.toString()),
           actions: <Widget>[
             FlatButton(
@@ -89,10 +86,6 @@ class _RoutinesPageState extends State<RoutinesPage> {
       );
     }
 
-    setState(() {
-      _isLoading = false;
-      _noRoutines = false;
-    });
   }
 
   Future<void> _createRoutine() {
@@ -115,10 +108,6 @@ class _RoutinesPageState extends State<RoutinesPage> {
               FlatButton(
                 child: Text('Agregar'),
                 onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                  });
-
                   _saveRoutine();
                   Navigator.of(context).pop();
                 },
