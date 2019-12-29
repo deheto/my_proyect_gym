@@ -1,5 +1,4 @@
 import '../providers/routine.dart';
-
 import '../providers/routines_provider.dart';
 import 'package:provider/provider.dart';
 import '../principal_views/routine_details_screen.dart';
@@ -20,10 +19,9 @@ class RoutineItem extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           child: Consumer<Routine>(
-            builder: (ctx, updateRoutine, child) =>
-            FittedBox(
-                          child: Text(
-                updateRoutine.exercises.length.toString(),
+            builder: (ctx, updateRoutine, child) => FittedBox(
+              child: Text(
+                updateRoutine.getExerciseListLenght().toString(),
               ),
             ),
           ),
@@ -40,7 +38,7 @@ class RoutineItem extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pushNamed(
               RoutineDetailsPage.routeName,
-              arguments: loadedRoutine.id,
+              arguments: loadedRoutine,
             );
           },
         ),

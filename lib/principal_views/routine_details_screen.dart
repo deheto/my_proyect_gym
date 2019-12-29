@@ -1,9 +1,7 @@
-import 'package:denis_proyect/providers/exercise.dart';
-
+import '../providers/exercise.dart';
+import 'package:provider/provider.dart';
 import '../providers/routine.dart';
 import '../providers/routines_provider.dart';
-import 'package:provider/provider.dart';
-import '../custom_widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -20,11 +18,12 @@ class RoutineDetailsPage extends StatefulWidget {
 class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
   TextEditingController _nameExerciseController = TextEditingController();
 
+  var isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    final routineID = ModalRoute.of(context).settings.arguments as String;
-    final routine = Provider.of<RoutinesProvider>(context, listen: false)
-        .findRoutineByID(routineID);
+    final routine = ModalRoute.of(context).settings.arguments as Routine;
+    final copyRoutine = routine.getListExercises;
 
     return Scaffold(
       appBar: AppBar(
@@ -33,42 +32,43 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
       ),
       // drawer: MainDrawer(),
       /*
-      * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
-      */
-      body: Container(
-        height: 525,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
-            value: routine.exercises[index],
-            child: Slidable(
-              key: Key(routine.exercises[index].name),
-              actionPane: SlidableDrawerActionPane(),
-              actionExtentRatio: 0.25,
-              secondaryActions: <Widget>[
-                IconSlideAction(
-                  caption: 'Eliminar',
-                  color: Colors.red,
-                  icon: Icons.delete,
-                  onTap: () => _confirmDeleteExercise(index, routine),
+        * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
+        */
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              height: 525,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+                  value: copyRoutine[index],
+                  child: Slidable(
+                    key: Key(copyRoutine[index].id),
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Eliminar',
+                        color: Colors.red,
+                        icon: Icons.delete,
+                        onTap: () => _confirmDeleteExercise(index, copyRoutine),
+                      ),
+                      IconSlideAction(
+                        caption: 'Agregar serie',
+                        color: Colors.green,
+                        icon: Icons.add,
+                        onTap: () => _addSerie(copyRoutine[index]),
+                      ),
+                    ],
+                    closeOnScroll: false,
+                    child: copyRoutine.length <= 0 ? Center() : ExerciseItem(),
+                  ),
                 ),
-                IconSlideAction(
-                  caption: 'Agregar serie',
-                  color: Colors.green,
-                  icon: Icons.add,
-                  onTap: () => _addSerie(routine.exercises[index]),
-                ),
-              ],
-              closeOnScroll: false,
-              child: routine.exercises.length <= 0 
-                  ? Center()
-                  : ExerciseItem(),
-            ),
-          ),
-          addAutomaticKeepAlives: false,
-          itemCount: routine.exercises.length,
-        ),
-      ),
+                addAutomaticKeepAlives: false,
+                itemCount: copyRoutine.length,
+              )),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
@@ -94,13 +94,14 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     );
   }
 
-  Future<void> _confirmDeleteExercise(int index, Routine routine) async {
+  Future<void> _confirmDeleteExercise(
+      int index, List<Exercise> copyRoutine) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(routine.exercises[index].name),
+          title: Text(copyRoutine[index].name),
           content: Text('¿Desea realmente eliminarlo?'),
           actions: <Widget>[
             FlatButton(
@@ -109,13 +110,18 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
             ),
             FlatButton(
                 child: Text('Eliminar'),
-                onPressed: () {
-                  setState(() {
-                    routine.exercises.removeAt(index);
-                  });
+                onPressed: () async {
+                  try {
+                    // await routine.removeExercise(exercises[index].id);
+                  } catch (error) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                        'Eliminar fallo.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ));
+                  }
                   Navigator.pop(context);
-                  // Scaffold.of(context).showSnackBar(SnackBar(
-                  //     content: Text("${listExercise[index].name} eliminado.")));
                 }),
           ],
         );
@@ -143,19 +149,31 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
               ),
               FlatButton(
                 child: Text('Agregar'),
-                onPressed: () {
-                  _createExercise(routine);
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  try {
+                    Navigator.of(context).pop();
+
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    await routine
+                        .addExerciseToRoutine(_nameExerciseController.text);
+
+
+                  } catch (error) {
+                    /*** 
+                         *
+                         *    !!!HACER ALGO AQUI 
+                         ***/
+                  }
+                  setState(() {
+                    isLoading = false;
+                  });
                 },
               ),
             ],
           );
         });
-  }
-
-  void _createExercise(Routine routine) {
-    setState(() {
-      routine.addExerciseToRoutine(_nameExerciseController.text);
-    });
   }
 }

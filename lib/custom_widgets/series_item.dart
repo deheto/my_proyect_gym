@@ -7,18 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SeriesItem extends StatelessWidget {
-  // final Function deleteSerie;
-  // final double weigth;
-  // final int repTotal;
-  // final String id;
-  // final UnityWeight unityWeight;
+
   final int index;
   SeriesItem({
     @required this.index,
-    // @required this.weigth,
-    // @required this.repTotal,
-    // @required this.unityWeight,
-    // this.deleteSerie,
   });
 
   @override

@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'package:enum_to_string/enum_to_string.dart';
 import '../models/unity_weight.dart';
 import '../models/series.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 class Exercise with ChangeNotifier {
   final String routineID;
@@ -16,27 +19,42 @@ class Exercise with ChangeNotifier {
     @required this.id,
     @required this.routineID,
     @required this.name,
-   @required this.listSeries,
+    @required this.listSeries,
   });
 
-   Exercise({
+  Exercise({
     @required this.id,
     @required this.routineID,
     @required this.name,
-
   });
 
+  Future<void> addSerieToExercise(String routineID, String exerciseID,
+      double weigth, int repTotal, UnityWeight unityWeight) async {
+    final url =
+        'https://gym-proyect.firebaseio.com/routines/$routineID/$exerciseID.json';
 
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'series': {
+            'exerciseID': exerciseID,
+            'weigth': weigth.toString(),
+            'repTotal': repTotal.toString(),
+            'unityWeight': EnumToString.parse(unityWeight),
+          }
+        }),
+      );
+      print(json.decode(response.body));
+      listSeries.add(Series(
+          exerciseID: exerciseID,
+          id: json.decode(response.body)['name'],
+          weigth: weigth,
+          repTotal: repTotal,
+          unityWeight: unityWeight));
 
-  void addSerieToExercise(String exerciseID, String id, double weigth,
-      int repTotal, UnityWeight unityWeight) {
-    listSeries.add(Series(
-        exerciseID: exerciseID,
-        id: id,
-        weigth: weigth,
-        repTotal: repTotal,
-        unityWeight: unityWeight));
-    notifyListeners();
+      notifyListeners();
+    } catch (error) {}
   }
 
   double totalWeight() {

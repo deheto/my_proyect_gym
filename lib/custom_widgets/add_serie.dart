@@ -27,7 +27,7 @@ class _AddSerieState extends State<AddSerie> {
       return;
     }
 
-    widget.exercise.addSerieToExercise(widget.exercise.id, null, weight, reps, unityWeight);
+    widget.exercise.addSerieToExercise(widget.exercise.routineID,widget.exercise.id, weight, reps, unityWeight);
     
     Navigator.of(context).pop();
   }
@@ -91,7 +91,7 @@ class _AddSerieState extends State<AddSerie> {
             Center(
               child: RaisedButton(
                 child: Text('Agregar serie'),
-                onPressed: _submitData,
+                onPressed: () => _submitData(),
                 elevation: 5.0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0)),

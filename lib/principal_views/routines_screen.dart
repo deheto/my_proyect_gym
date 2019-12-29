@@ -1,6 +1,6 @@
 import '../providers/routines_provider.dart';
 import 'package:provider/provider.dart';
-
+import '../models/htpp_exception.dart';
 import '../custom_widgets/routines_listview.dart';
 
 import 'package:flutter/material.dart';
@@ -14,17 +14,26 @@ class RoutinesPage extends StatefulWidget {
 
 class _RoutinesPageState extends State<RoutinesPage> {
   var _isLoading = false;
-
+  var _noRoutines = false;
   final _nameRoutineController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
+      body: _noRoutines
           ? Center(
-              child: CircularProgressIndicator(),
+              child: Text(
+                'No tienes rutinas agregadas.',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
             )
-          : RoutinesListView(),
+          : _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : RoutinesListView(),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
@@ -35,6 +44,26 @@ class _RoutinesPageState extends State<RoutinesPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  @override
+  void initState() {
+    _isLoading = true;
+    Provider.of<RoutinesProvider>(context, listen: false)
+        .getRoutinesFromFireBase()
+        .then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    }).catchError((error) {
+   
+        setState(() {
+          _noRoutines = true;
+        });
+      
+    });
+
+    super.initState();
   }
 
   Future<void> _saveRoutine() async {
@@ -58,14 +87,15 @@ class _RoutinesPageState extends State<RoutinesPage> {
           ],
         ),
       );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
+
+    setState(() {
+      _isLoading = false;
+      _noRoutines = false;
+    });
   }
 
-  Future<void> _createRoutine()  {
+  Future<void> _createRoutine() {
     return showDialog(
         context: context,
         builder: (context) {
@@ -88,9 +118,9 @@ class _RoutinesPageState extends State<RoutinesPage> {
                   setState(() {
                     _isLoading = true;
                   });
-                       
+
                   _saveRoutine();
-           Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
               ),
             ],

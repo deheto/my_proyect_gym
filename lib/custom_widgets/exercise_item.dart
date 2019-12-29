@@ -47,7 +47,7 @@ class _ExerciseItemState extends State<ExerciseItem> {
               style: Theme.of(context).textTheme.title,
             ),
             subtitle: Text(
-              'Peso Total Levantado: ${exercise.totalWeight()}',
+              'Peso Total: ${exercise.totalWeight()}',
             ),
             trailing: IconButton(
               icon: _updateIcon(),
