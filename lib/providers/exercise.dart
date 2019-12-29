@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../models/htpp_exception.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import '../models/unity_weight.dart';
 import '../models/series.dart';
@@ -28,23 +29,22 @@ class Exercise with ChangeNotifier {
     @required this.name,
   });
 
-  void addSerie(Series serie){
+  void addSerie(Series serie) {
     listSeries.add(serie);
   }
 
-  Future<void> addSerieToExercise( String exerciseID,
-      double weigth, int repTotal, UnityWeight unityWeight) async {
-    final url =
-        'https://gym-proyect.firebaseio.com/series.json';
+  Future<void> addSerieToExercise(String exerciseID, double weigth,
+      int repTotal, UnityWeight unityWeight) async {
+    final url = 'https://gym-proyect.firebaseio.com/series.json';
 
     try {
       final response = await http.post(
         url,
-        body: json.encode({ 
-            'exerciseID': exerciseID,
-            'weigth': weigth.toString(),
-            'repTotal': repTotal.toString(),
-            'unityWeight': EnumToString.parse(unityWeight),
+        body: json.encode({
+          'exerciseID': exerciseID,
+          'weigth': weigth.toString(),
+          'repTotal': repTotal.toString(),
+          'unityWeight': EnumToString.parse(unityWeight),
         }),
       );
       // print(json.decode(response.body));
@@ -70,8 +70,21 @@ class Exercise with ChangeNotifier {
     return amount;
   }
 
-  void deleteSerie(int index) {
+  Future<void> deleteSerie(int index) async {
+    var serie = listSeries.elementAt(index);
+    var url = 'https://gym-proyect.firebaseio.com/series/${serie.id}.json';
+
     listSeries.removeAt(index);
     notifyListeners();
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      listSeries.insert(index, serie);
+      notifyListeners();
+      throw HttpException('No se pudo eliminar el ejercicio.');
+    }
+
+    serie = null;
   }
 }

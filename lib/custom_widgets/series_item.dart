@@ -29,9 +29,24 @@ class SeriesItem extends StatelessWidget {
             Icons.delete,
             color: Colors.red,
           ),
-          onPressed: () => exercise.deleteSerie(index),
+          onPressed: () async {
+             
+             try {
+            
+           return  await exercise.deleteSerie(index);
+             
+             } catch (error){
+            /**
+             * !!!AGREGAR MANEJO DE ERORRES!
+             * 
+             */
+             }
+             
+             }
         ),
       ),
     );
   }
+
+
 }

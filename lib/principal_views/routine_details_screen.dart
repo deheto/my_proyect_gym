@@ -23,14 +23,14 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final routine = ModalRoute.of(context).settings.arguments as Routine;
-    final copyRoutine = routine.getListExercises;
+    final copyRoutine = routine.getCopyListExercises;
 
     return Scaffold(
       appBar: AppBar(
         title:
             Text('${routine.name}, ${DateFormat.yMMMd().format(routine.date)}'),
       ),
-      // drawer: MainDrawer(),
+    
       /*
         * ! ARREGLAR EL TAMAÑO QUE TOMA LA LISTA      
         */
@@ -53,13 +53,17 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                         caption: 'Eliminar',
                         color: Colors.red,
                         icon: Icons.delete,
-                        onTap: () => _confirmDeleteExercise(index, copyRoutine),
+                        onTap: () {
+                          _confirmDeleteExercise(index, routine, copyRoutine);
+                        },
                       ),
                       IconSlideAction(
                         caption: 'Agregar serie',
                         color: Colors.green,
                         icon: Icons.add,
-                        onTap: () => _addSerie(copyRoutine[index]),
+                        onTap: () {
+                          _addSerie(routine.getListExercises[index]);
+                        },
                       ),
                     ],
                     closeOnScroll: false,
@@ -73,7 +77,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => _addExercise(routine),
+          onPressed: () => _addExercise(routine,copyRoutine),
           elevation: 5,
         ),
       ),
@@ -95,13 +99,13 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
   }
 
   Future<void> _confirmDeleteExercise(
-      int index, List<Exercise> copyRoutine) async {
+      int index, Routine routine, List<Exercise> copyRoutine) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(copyRoutine[index].name),
+          title: Text(routine.getListExercises[index].name),
           content: Text('¿Desea realmente eliminarlo?'),
           actions: <Widget>[
             FlatButton(
@@ -112,7 +116,12 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                 child: Text('Eliminar'),
                 onPressed: () async {
                   try {
-                    // await routine.removeExercise(exercises[index].id);
+                    setState(() {
+                           routine.removeExercise(
+                        index, routine.getListExercises[index].id);
+
+                    });
+                
                   } catch (error) {
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text(
@@ -129,7 +138,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     );
   }
 
-  Future<void> _addExercise(Routine routine) async {
+  Future<void> _addExercise(Routine routine, List<Exercise> copyRoutine) async {
     return showDialog(
         context: context,
         builder: (context) {
@@ -153,14 +162,9 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                   try {
                     Navigator.of(context).pop();
 
-                    setState(() {
-                      isLoading = true;
-                    });
-
+                    isLoading = true;
                     await routine
                         .addExerciseToRoutine(_nameExerciseController.text);
-
-
                   } catch (error) {
                     /*** 
                          *

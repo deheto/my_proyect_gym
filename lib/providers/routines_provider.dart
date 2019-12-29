@@ -9,43 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class RoutinesProvider with ChangeNotifier {
-  List<Routine> _routines = [
-    // Routine.fromDB(
-    //   Routine.getList: [
-    //     Exercise.fromDB(
-    //       routineID: 'r2',
-    //       id: 'd3a',
-    //       name: 'Sentadilla',
-    //       listSeries: [
-    //         Series(
-    //           exerciseID: 'd3a',
-    //           id: '23',
-    //           weigth: 15,
-    //           repTotal: 3,
-    //           unityWeight: UnityWeight.lbs,
-    //         ),
-    //         Series(
-    //           exerciseID: 'd3a',
-    //           id: '3',
-    //           weigth: 31,
-    //           repTotal: 32,
-    //           unityWeight: UnityWeight.lbs,
-    //         ),
-    //         Series(
-    //           exerciseID: 'd3a',
-    //           id: '1',
-    //           weigth: 32,
-    //           repTotal: 1,
-    //           unityWeight: UnityWeight.lbs,
-    //         ),
-    //       ],
-    //     ),
-    //   ],
-    //   name: 'Pierna',
-    //   date: DateTime.now(),
-    //   id: 'd2',
-    // ),
-  ];
+  List<Routine> _routines = [];
 
   List<Routine> get copyRoutines {
     return [..._routines];
@@ -138,15 +102,14 @@ class RoutinesProvider with ChangeNotifier {
 
     Exercise exercise;
     UnityWeight unityWeight;
-    // print(json.decode(response.body));
+    
 
     data.forEach((serieID, serieData) {
       exercise = exercisesToFill
           .firstWhere((exercise) => exercise.id == serieData['exerciseID']);
 
       if (exercise != null) {
-        
-
+      
         'lbs'.contains(serieData['unityWeight'])
             ? unityWeight = UnityWeight.lbs
             : unityWeight = UnityWeight.kgs;

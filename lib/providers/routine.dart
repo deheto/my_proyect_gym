@@ -1,9 +1,10 @@
 import 'dart:convert';
+
 import '../models/htpp_exception.dart';
-import '../models/series.dart';
-import 'package:http/http.dart' as http;
-import '../providers/exercise.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+import '../providers/exercise.dart';
 
 class Routine with ChangeNotifier {
   final String id;
@@ -23,8 +24,12 @@ class Routine with ChangeNotifier {
     @required this.name,
   });
 
-  List<Exercise> get getListExercises {
+  List<Exercise> get getCopyListExercises {
     return [..._exercises];
+  }
+
+   List<Exercise> get getListExercises {
+    return _exercises;
   }
 
   int getExerciseListLenght() {
@@ -42,10 +47,8 @@ class Routine with ChangeNotifier {
       final response = await http.post(
         url,
         body: json.encode({
-        
-            'routineID': id,
-            'name': nameExercise,
-         
+          'routineID': id,
+          'name': nameExercise,
         }),
       );
 
@@ -61,23 +64,40 @@ class Routine with ChangeNotifier {
     } catch (error) {}
   }
 
-  // Future<void> removeExercise(String idExercise) async {
-  //   final url = 'https://gym-proyect.firebaseio.com/routines/$id';
+  Future<void> removeExercise(int index, String idExercise) async {
+    final url = 'https://gym-proyect.firebaseio.com/exercises/$idExercise.json';
 
-  //   final existingExerciseIndex =
-  //       _exercises.indexWhere((exercise) => exercise.id == idExercise);
+    // final existingExerciseIndex =
+    //     _exercises.indexWhere((exercise) => exercise.id == idExercise);
 
-  //   var existingExercise = _exercises[existingExerciseIndex];
-  //   _exercises.removeAt(existingExerciseIndex);
-  //   notifyListeners();
-  //   final response = await http.delete(url);
+    var existingExercise = _exercises[index];
+    _exercises.removeAt(index);
 
-  //   if (response.statusCode >= 400) {
-  //     _exercises.insert(existingExerciseIndex, existingExercise);
-  //     notifyListeners();
-  //     throw HttpException('No se pudo eliminar el ejercicio.');
-  //   }
+    notifyListeners();
+    
+    final response = await http.delete(url);
 
-  //   existingExercise = null;
-  // }
+    if (response.statusCode >= 400) {
+      _exercises.insert(index, existingExercise);
+      notifyListeners();
+      throw HttpException('No se pudo eliminar el ejercicio.');
+    }
+
+    String urlSerie;
+
+    existingExercise.listSeries.forEach((serie) async{
+
+   urlSerie = 'https://gym-proyect.firebaseio.com/series/${serie.id}.json';
+ 
+      final response = await http.delete(urlSerie);
+
+    if (response.statusCode >= 400) {
+      throw HttpException('No se pudo eliminar el ejercicio.');
+    }
+
+    });
+  
+
+    existingExercise = null;
+  }
 }
