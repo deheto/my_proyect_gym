@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:provider/provider.dart';
 import '../custom_widgets/series_item.dart';
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 import 'package:flutter/material.dart';
 
 class ExerciseItem extends StatefulWidget {
@@ -26,7 +26,7 @@ class _ExerciseItemState extends State<ExerciseItem> {
 
   @override
   Widget build(BuildContext context) {
-    final exercise = Provider.of<Exercise>(context);
+    final exercise = Provider.of<ExerciseUser>(context);
 
     return Column(
       children: <Widget>[

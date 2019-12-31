@@ -1,4 +1,4 @@
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +16,7 @@ class SeriesItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final exercise = Provider.of<Exercise>(context, listen: false);
+    final exercise = Provider.of<ExerciseUser>(context, listen: false);
 
     return Card(
       elevation: 1,
@@ -32,8 +32,7 @@ class SeriesItem extends StatelessWidget {
           onPressed: () async {
              
              try {
-            
-           return  await exercise.deleteSerie(index);
+       await exercise.deleteSerie(index);
              
              } catch (error){
             /**
@@ -47,6 +46,4 @@ class SeriesItem extends StatelessWidget {
       ),
     );
   }
-
-
 }

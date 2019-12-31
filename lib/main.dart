@@ -1,9 +1,12 @@
+import 'package:denis_proyect/providers/exercise_model.dart';
+
+import './principal_views/create_routine_screen.dart';
 import 'package:provider/provider.dart';
 
 import './principal_views/principal_screen.dart';
 import './principal_views/routine_details_screen.dart';
 import './principal_views/routines_screen.dart';
-import './principal_views/login_signup_screen.dart';
+// import './principal_views/login_signup_screen.dart';
 import './providers/routines_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +19,38 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(
           value: RoutinesProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: (ExerciseModelProvider()),
         )
       ],
       child: MaterialApp(
         title: 'MyLittleProgress',
+        theme: ThemeData(
+          primaryColor: Colors.grey[800],
+          accentColor: Colors.purpleAccent,
+
+          scaffoldBackgroundColor: Colors.grey[900],
+          // * TEXT STLYE
+          textTheme: ThemeData.light().textTheme.copyWith(
+                title: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+          // * APPBAR STYLE
+          appBarTheme: AppBarTheme(
+            color: Colors.grey[800],
+            textTheme: ThemeData.light().textTheme.copyWith(
+                  title: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+          ),
+        ),
         home: PrincipalPage(),
         routes: {
           PrincipalPage.routeName: (ctx) => PrincipalPage(),

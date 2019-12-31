@@ -1,7 +1,9 @@
+import 'package:provider/provider.dart';
+
 import '../models/htpp_exception.dart';
 import '../models/series.dart';
 import '../models/unity_weight.dart';
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 
 import '../providers/routine.dart';
 import 'dart:convert';
@@ -66,16 +68,16 @@ class RoutinesProvider with ChangeNotifier {
 
     // print(json.decode(response.body));
 
-    List<Exercise> exercisesToFill = [];
+    List<ExerciseUser> exercisesToFill = [];
     Routine routine;
-    Exercise exercise;
+    ExerciseUser exercise;
 
     data.forEach((exerciseID, exerciseData) {
       routine =
           tempList.firstWhere((rout) => rout.id == exerciseData['routineID']);
 
       if (routine != null) {
-        exercise = Exercise(
+        exercise = ExerciseUser(
           id: exerciseID,
           name: exerciseData['name'],
           routineID: exerciseData['routineID'],
@@ -89,7 +91,7 @@ class RoutinesProvider with ChangeNotifier {
     await _fillExercises(exercisesToFill);
   }
 
-  Future<void> _fillExercises(List<Exercise> exercisesToFill) async {
+  Future<void> _fillExercises(List<ExerciseUser> exercisesToFill) async {
     const url = 'https://gym-proyect.firebaseio.com/series.json';
 
     final response = await http.get(url);
@@ -100,16 +102,14 @@ class RoutinesProvider with ChangeNotifier {
       return;
     }
 
-    Exercise exercise;
+    ExerciseUser exercise;
     UnityWeight unityWeight;
-    
 
     data.forEach((serieID, serieData) {
       exercise = exercisesToFill
           .firstWhere((exercise) => exercise.id == serieData['exerciseID']);
 
       if (exercise != null) {
-      
         'lbs'.contains(serieData['unityWeight'])
             ? unityWeight = UnityWeight.lbs
             : unityWeight = UnityWeight.kgs;
@@ -151,5 +151,53 @@ class RoutinesProvider with ChangeNotifier {
       print(error);
       throw error;
     }
+  }
+
+  int _getRoutineID(String routineID) {
+    return _routines.indexWhere((rout) => rout.id == routineID);
+  }
+
+  Future<void> deleteRoutine(String routineID) async {
+    final url = 'https://gym-proyect.firebaseio.com/routines/$routineID.json';
+
+    final existingRoutineIndex = _getRoutineID(routineID);
+    var existingRoutine = _routines[existingRoutineIndex];
+
+    notifyListeners();
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _routines.insert(existingRoutineIndex, existingRoutine);
+      notifyListeners();
+      throw HttpException('No se pudo eliminar la rutina.');
+    }
+
+    String urlDeleteExercise;
+    String urlDeleteSerie;
+
+    existingRoutine.getCopyListExercises.forEach((exercise) async {
+      urlDeleteExercise =
+          'https://gym-proyect.firebaseio.com/exercises/${exercise.id}.json';
+
+      final response = await http.delete(urlDeleteExercise);
+
+      if (response.statusCode >= 400) {
+        throw HttpException('No se pudo eliminar el ejercicio.');
+      }
+
+      exercise.listSeries.forEach((serie) async {
+        urlDeleteSerie =
+            'https://gym-proyect.firebaseio.com/series/${serie.id}.json';
+
+        final response = await http.delete(urlDeleteSerie);
+
+        if (response.statusCode >= 400) {
+          throw HttpException('No se pudo eliminar el ejercicio.');
+        }
+      });
+    });
+
+    existingRoutine = null;
   }
 }

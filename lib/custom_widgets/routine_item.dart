@@ -17,32 +17,52 @@ class RoutineItem extends StatelessWidget {
         horizontal: 5,
       ),
       child: ListTile(
-        leading: CircleAvatar(
-          child: Consumer<Routine>(
-            builder: (ctx, updateRoutine, child) => FittedBox(
-              child: Text(
-                updateRoutine.getExerciseListLenght().toString(),
+          leading: CircleAvatar(
+            child: Consumer<Routine>(
+              builder: (ctx, updateRoutine, child) => FittedBox(
+                child: Text(
+                  updateRoutine.getExerciseListLenght().toString(),
+                ),
               ),
             ),
           ),
-        ),
-        title: Text(
-          loadedRoutine.name,
-          style: Theme.of(context).textTheme.title,
-        ),
-        subtitle: Text(
-          DateFormat.yMMMEd().format(loadedRoutine.date),
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.forward),
-          onPressed: () {
-            Navigator.of(context).pushNamed(
-              RoutineDetailsPage.routeName,
-              arguments: loadedRoutine,
-            );
-          },
-        ),
-      ),
+          title: Text(
+            loadedRoutine.name,
+            style: Theme.of(context).textTheme.title,
+          ),
+          subtitle: Text(
+            DateFormat.yMMMEd().format(loadedRoutine.date),
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.forward),
+            onPressed: () {
+             
+              Navigator.of(context).pushNamed(
+                RoutineDetailsPage.routeName,
+                arguments: loadedRoutine,
+              );
+            },
+          ),
+          onLongPress: () async {
+
+            try{
+
+             Provider.of<RoutinesProvider>(context, listen: false).deleteRoutine(loadedRoutine.id);
+         
+         
+         
+          }catch(error){
+
+            /**
+             * 
+             * !!! AGREGAR MANEJO DE ERRORES!!
+             */
+
+          }
+
+          }),
     );
   }
+
+ 
 }

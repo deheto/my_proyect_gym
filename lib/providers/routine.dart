@@ -4,13 +4,13 @@ import '../models/htpp_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 
 class Routine with ChangeNotifier {
   final String id;
   final DateTime date;
   final String name;
-  final List<Exercise> _exercises = [];
+  final List<ExerciseUser> _exercises = [];
 
   Routine({
     @required this.id,
@@ -24,11 +24,11 @@ class Routine with ChangeNotifier {
     @required this.name,
   });
 
-  List<Exercise> get getCopyListExercises {
+  List<ExerciseUser> get getCopyListExercises {
     return [..._exercises];
   }
 
-   List<Exercise> get getListExercises {
+   List<ExerciseUser> get getListExercises {
     return _exercises;
   }
 
@@ -36,8 +36,13 @@ class Routine with ChangeNotifier {
     return _exercises.length;
   }
 
-  void fillExercises(Exercise exercise) {
+  void fillExercises(ExerciseUser exercise) {
     _exercises.add(exercise);
+  }
+
+   int _getExerciseIndex(String exerciseID){
+    return _exercises.indexWhere((ex) => ex.id == exerciseID);
+
   }
 
   Future<void> addExerciseToRoutine(String nameExercise) async {
@@ -54,7 +59,7 @@ class Routine with ChangeNotifier {
 
       print(json.decode(response.body));
 
-      _exercises.add(Exercise(
+      _exercises.add(ExerciseUser(
         name: nameExercise,
         id: json.decode(response.body)['name'],
         routineID: id,
@@ -63,22 +68,19 @@ class Routine with ChangeNotifier {
       notifyListeners();
     } catch (error) {}
   }
-
-  Future<void> removeExercise(int index, String idExercise) async {
+ Future<void> removeExercise(String idExercise) async {
     final url = 'https://gym-proyect.firebaseio.com/exercises/$idExercise.json';
 
-    // final existingExerciseIndex =
-    //     _exercises.indexWhere((exercise) => exercise.id == idExercise);
+    final existingExerciseIndex = _getExerciseIndex(idExercise);
+    var existingExercise = _exercises[existingExerciseIndex];
 
-    var existingExercise = _exercises[index];
-    _exercises.removeAt(index);
 
     notifyListeners();
     
     final response = await http.delete(url);
 
     if (response.statusCode >= 400) {
-      _exercises.insert(index, existingExercise);
+      _exercises.insert(existingExerciseIndex, existingExercise);
       notifyListeners();
       throw HttpException('No se pudo eliminar el ejercicio.');
     }
@@ -92,7 +94,7 @@ class Routine with ChangeNotifier {
       final response = await http.delete(urlSerie);
 
     if (response.statusCode >= 400) {
-      throw HttpException('No se pudo eliminar el ejercicio.');
+      throw HttpException('No se pudo eliminar las series del ejercicio.');
     }
 
     });
@@ -100,4 +102,7 @@ class Routine with ChangeNotifier {
 
     existingExercise = null;
   }
+  
+
+  
 }

@@ -1,4 +1,4 @@
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 import 'package:provider/provider.dart';
 import '../providers/routine.dart';
 import '../providers/routines_provider.dart';
@@ -85,7 +85,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     );
   }
 
-  void _addSerie(Exercise exercise) {
+  void _addSerie(ExerciseUser exercise) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -99,7 +99,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
   }
 
   Future<void> _confirmDeleteExercise(
-      int index, Routine routine, List<Exercise> copyRoutine) async {
+      int index, Routine routine, List<ExerciseUser> copyRoutine) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -116,10 +116,11 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                 child: Text('Eliminar'),
                 onPressed: () async {
                   try {
-                    setState(() {
-                           routine.removeExercise(
-                        index, routine.getListExercises[index].id);
 
+                  await  routine.removeExercise(routine.getListExercises[index].id);
+
+                    setState(() {
+                          copyRoutine.removeAt(index);
                     });
                 
                   } catch (error) {
@@ -138,7 +139,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     );
   }
 
-  Future<void> _addExercise(Routine routine, List<Exercise> copyRoutine) async {
+  Future<void> _addExercise(Routine routine, List<ExerciseUser> copyRoutine) async {
     return showDialog(
         context: context,
         builder: (context) {

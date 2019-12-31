@@ -1,3 +1,6 @@
+
+
+
 import '../providers/routines_provider.dart';
 import 'package:provider/provider.dart';
 import '../models/htpp_exception.dart';
@@ -5,14 +8,9 @@ import '../custom_widgets/routines_listview.dart';
 
 import 'package:flutter/material.dart';
 
-class RoutinesPage extends StatefulWidget {
+
+class RoutinesPage extends StatelessWidget {
   static const routeName = '/routine-page';
-
-  @override
-  _RoutinesPageState createState() => _RoutinesPageState();
-}
-
-class _RoutinesPageState extends State<RoutinesPage> {
 
   final _nameRoutineController = TextEditingController();
 
@@ -55,7 +53,7 @@ class _RoutinesPageState extends State<RoutinesPage> {
         padding: const EdgeInsets.only(bottom: 10),
         child: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => _createRoutine(),
+          onPressed: () => _createRoutine(context),
           elevation: 5,
         ),
       ),
@@ -63,7 +61,7 @@ class _RoutinesPageState extends State<RoutinesPage> {
     );
   }
 
-  Future<void> _saveRoutine() async {
+  Future<void> _saveRoutine(BuildContext context) async {
     try {
       await Provider.of<RoutinesProvider>(context).addRoutine(
         _nameRoutineController.text,
@@ -88,7 +86,7 @@ class _RoutinesPageState extends State<RoutinesPage> {
 
   }
 
-  Future<void> _createRoutine() {
+  Future<void> _createRoutine(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -108,7 +106,7 @@ class _RoutinesPageState extends State<RoutinesPage> {
               FlatButton(
                 child: Text('Agregar'),
                 onPressed: () {
-                  _saveRoutine();
+                  _saveRoutine(context);
                   Navigator.of(context).pop();
                 },
               ),
@@ -117,3 +115,4 @@ class _RoutinesPageState extends State<RoutinesPage> {
         });
   }
 }
+

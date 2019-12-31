@@ -1,12 +1,14 @@
 import 'dart:convert';
-import '../models/htpp_exception.dart';
+
 import 'package:enum_to_string/enum_to_string.dart';
-import '../models/unity_weight.dart';
-import '../models/series.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class Exercise with ChangeNotifier {
+import '../models/htpp_exception.dart';
+import '../models/series.dart';
+import '../models/unity_weight.dart';
+
+class ExerciseUser with ChangeNotifier {
   final String routineID;
   final String id;
   final String name;
@@ -16,14 +18,14 @@ class Exercise with ChangeNotifier {
     return [...listSeries];
   }
 
-  Exercise.fromDB({
+  ExerciseUser.fromDB({
     @required this.id,
     @required this.routineID,
     @required this.name,
     @required this.listSeries,
   });
 
-  Exercise({
+  ExerciseUser({
     @required this.id,
     @required this.routineID,
     @required this.name,
@@ -71,6 +73,7 @@ class Exercise with ChangeNotifier {
   }
 
   Future<void> deleteSerie(int index) async {
+    
     var serie = listSeries.elementAt(index);
     var url = 'https://gym-proyect.firebaseio.com/series/${serie.id}.json';
 

@@ -1,11 +1,11 @@
-import '../providers/exercise.dart';
+import '../providers/exercise_user.dart';
 
 import '../models/unity_weight.dart';
 import 'package:flutter/material.dart';
 
 class AddSerie extends StatefulWidget {
   
-  final Exercise exercise;
+  final ExerciseUser exercise;
 
   AddSerie(this.exercise);
 
