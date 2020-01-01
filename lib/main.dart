@@ -29,7 +29,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.grey[800],
           accentColor: Colors.purpleAccent,
-
+   dividerColor: Colors.grey[800],
+         
           scaffoldBackgroundColor: Colors.grey[900],
           // * TEXT STLYE
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -38,7 +39,15 @@ class MyApp extends StatelessWidget {
                   fontSize: 18,
                   color: Colors.white,
                 ),
+
+                // * FOR TEXT INPUT STRINGS
+                display1: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 15,
+                  color: Colors.white,
+                ),
               ),
+              
           // * APPBAR STYLE
           appBarTheme: AppBarTheme(
             color: Colors.grey[800],
