@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
                 ),
           ),
         ),
-        home: PrincipalPage(),
+        home: CreateRoutineScreen(),
         routes: {
           PrincipalPage.routeName: (ctx) => PrincipalPage(),
           RoutinesPage.routeName: (ctx) => RoutinesPage(),

@@ -8,7 +8,8 @@ class CreateRoutineScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listExercise =
-        Provider.of<ExerciseModelProvider>(context, listen: false).listExerciseModel;
+        Provider.of<ExerciseModelProvider>(context, listen: false)
+            .listExerciseModel;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,11 +24,18 @@ class CreateRoutineScreen extends StatelessWidget {
               BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              // Padding(
+              //   child: Text(
+              //     'Nombre de la rutina: ',
+              //     style: Theme.of(context).textTheme.title,
+              //   ), padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
+              // ),
+
               Container(
                 margin:
-                    const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
                 child: TextFormField(
                   cursorColor: Colors.white,
                   style: Theme.of(context).textTheme.title,
@@ -44,13 +52,13 @@ class CreateRoutineScreen extends StatelessWidget {
                         color: Theme.of(context).accentColor,
                       ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                      ),
-                    ),
-                    labelText: "Ejemplo: Pierna/Hombro",
+                    // enabledBorder: OutlineInputBorder(
+                    //   borderRadius: BorderRadius.all(Radius.circular(12)),
+                    //   borderSide: BorderSide(
+                    //     color: Colors.white,
+                    //   ),
+                    // ),
+                    labelText: '  Nombre de la rutina',
                     labelStyle: Theme.of(context).textTheme.title,
                   ),
                 ),
@@ -60,9 +68,11 @@ class CreateRoutineScreen extends StatelessWidget {
                 ),
                 height: 60,
               ),
-              Container(
-                height: 300,
-                width: double.infinity,
+              // Container(
+              //   height: 600,
+              //   width: double.infinity,
+              Expanded(
+                
                 child: GridView.builder(
                   itemBuilder: (ctx, i) => ExerciseModelItem(listExercise[i]),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -73,7 +83,8 @@ class CreateRoutineScreen extends StatelessWidget {
                   ),
                   itemCount: listExercise.length,
                 ),
-              )
+              // )
+              ),
             ],
           ),
         ),
