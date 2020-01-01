@@ -25,10 +25,11 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'MyLittleProgress',
         theme: ThemeData(
           primaryColor: Colors.grey[800],
-          accentColor: Colors.purpleAccent,
+          accentColor: Colors.lightBlue,
    dividerColor: Colors.grey[800],
          
           scaffoldBackgroundColor: Colors.grey[900],

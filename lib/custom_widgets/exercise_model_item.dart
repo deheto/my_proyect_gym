@@ -8,7 +8,7 @@ class ExerciseModelItem extends StatefulWidget {
 }
 
 class _ExerciseModelItemState extends State<ExerciseModelItem> {
-  var isChoosen = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +19,27 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
         footer: Container(
           height: 40,
           child: GestureDetector(
+            onTap: () {
+              setState(() {
+                exerciseModel.changeChosenStatus();
+              });
+
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content:  exerciseModel.isChosen
+                      ? Text(
+                          'Ejercicio añadido a la rutina.',
+                        )
+                      : Text(
+                          'Ejercicio eliminado de la rutina.',
+                        ),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
             child: GridTileBar(
-              backgroundColor: isChoosen ? Colors.black12 : Colors.black87,
+              backgroundColor:  exerciseModel.isChosen ? Colors.black12 : Colors.black87,
               leading: Consumer<ExerciseModel>(
                 builder: (ctx, exercise, _) => IconButton(
                   icon: Icon(
@@ -31,6 +50,9 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
                   color: Theme.of(context).accentColor,
                   onPressed: () {
                     exercise.changeFavoriteStatus();
+
+                    Provider.of<ExerciseModelProvider>(context)
+                        .addExerciseToFavorite(exerciseModel);
 
                     Scaffold.of(context).hideCurrentSnackBar();
                     Scaffold.of(context).showSnackBar(
@@ -52,30 +74,13 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
                 exerciseModel.name,
                 textAlign: TextAlign.center,
               ),
+              //* SHOW INFO
               trailing: IconButton(
                 icon: Icon(Icons.info),
                 onPressed: () {},
                 color: Theme.of(context).accentColor,
               ),
             ),
-            onTap: () {
-              setState(() {
-                isChoosen ? isChoosen = false : isChoosen = true;
-              });
-
-              Scaffold.of(context).hideCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: isChoosen ? Text(
-                    'Ejercicio añadido a la rutina.',
-                  ):  Text(
-                    'Ejercicio eliminado de la rutina.',
-                  ),
-                  duration: Duration(seconds: 2),
-                 
-                ),
-              );
-            },
           ),
         ),
       ),
