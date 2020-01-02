@@ -1,8 +1,7 @@
-import 'package:denis_proyect/providers/exercise_model.dart';
-
+import './principal_views/exercise_model_details_screen.dart';
+import './providers/exercise_model.dart';
 import './principal_views/create_routine_screen.dart';
 import 'package:provider/provider.dart';
-
 import './principal_views/principal_screen.dart';
 import './principal_views/routine_details_screen.dart';
 import './principal_views/routines_screen.dart';
@@ -30,21 +29,26 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.grey[800],
           accentColor: Colors.lightBlue,
-   dividerColor: Colors.grey[800],
+         dividerColor: Colors.grey[800],
          
           scaffoldBackgroundColor: Colors.grey[900],
           // * TEXT STLYE
           textTheme: ThemeData.light().textTheme.copyWith(
                 title: TextStyle(
                   fontFamily: 'Roboto',
-                  fontSize: 18,
+                  fontSize: 20,
                   color: Colors.white,
                 ),
-
+              
                 // * FOR TEXT INPUT STRINGS
                 display1: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 15,
+                  color: Colors.white,
+                ),
+                body1: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 16,
                   color: Colors.white,
                 ),
               ),
@@ -66,6 +70,7 @@ class MyApp extends StatelessWidget {
           PrincipalPage.routeName: (ctx) => PrincipalPage(),
           RoutinesPage.routeName: (ctx) => RoutinesPage(),
           RoutineDetailsPage.routeName: (ctx) => RoutineDetailsPage(),
+           ExerciseModelDetailsScreen.routeName: (ctx) => ExerciseModelDetailsScreen(),
         },
       ),
     );

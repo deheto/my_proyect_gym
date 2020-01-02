@@ -1,5 +1,4 @@
 import '../custom_widgets/exercise_model_item.dart';
-
 import '../providers/exercise_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,12 +8,15 @@ class CreateRoutineScreen extends StatefulWidget {
   _CreateRoutineScreenState createState() => _CreateRoutineScreenState();
 }
 
-class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
+class _CreateRoutineScreenState extends State<CreateRoutineScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _filterControler = TextEditingController();
   var _showFavorites = false;
+  var _filtExercise = false;
+  var _showRoutineExercises = false;
+  List<ExerciseModel> _favoriteListFiltered;
   List<ExerciseModel> _listExercise;
-  List<ExerciseModel> _favoriteList;
   ExerciseModelProvider _exerciseModelProvider;
 
   @override
@@ -23,12 +25,13 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
         Provider.of<ExerciseModelProvider>(context, listen: false);
 
     _listExercise = _exerciseModelProvider.listExerciseModel;
-    _favoriteList = _exerciseModelProvider.listFavoriteExerciseModel;
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
@@ -59,8 +62,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+          constraints: BoxConstraints(maxHeight: deviceSize.height),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +70,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               Container(
                 height: 40,
                 margin:
-                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+                    const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
                 child: TextFormField(
                   controller: _nameController,
                   cursorColor: Colors.white,
@@ -102,18 +104,72 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-              Divider(
-                color: Theme.of(context).dividerColor,
+
+              Row(
+                children: <Widget>[
+                  Flexible(
+                    flex: 3,
+                    child: Container(
+                      height: 0.5,
+                      width: double.infinity,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showRoutineExercises
+                                ? _showRoutineExercises = false
+                                : _showRoutineExercises = true;
+                          });
+                        },
+                        child: Container(
+                          height: 30,
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Theme.of(context).accentColor)),
+                          child: Center(
+                            child: Text(
+                              '10',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor,
+                                  fontSize: 20),
+                            ),
+                          ),
+                        )),
+                  ),
+                  Flexible(
+                    flex: 3,
+                    child: Container(
+                      height: 0.5,
+                      width: double.infinity,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
               ),
+
+            
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+                child: Center(child: _showRoutineExercise(deviceSize)),
+              ),
+              _showRoutineExercises? Divider(
+                color: Theme.of(context).dividerColor,
+              ) : Center(),
               Row(
                 children: <Widget>[
                   Flexible(
                     flex: 1,
                     child: Container(
                       height: 40,
-                      width: MediaQuery.of(context).size.width,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 8.0),
+                      width: deviceSize.width,
+                      margin:  EdgeInsets.symmetric(
+                          vertical: _showRoutineExercises ? 15.0 : 5, horizontal: 8.0),
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(8.0),
@@ -124,14 +180,14 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                           print('EL STRING SE VACIOOO!!');
 
                           setState(() {
+                            _filtExercise = false;
                             _listExercise =
                                 _exerciseModelProvider.listExerciseModel;
-                            _favoriteList = _exerciseModelProvider
-                                .listFavoriteExerciseModel;
                           });
                         },
                         onFieldSubmitted: (str) {
                           if (str.isEmpty) return;
+
                           filterLists();
                         },
                         controller: _filterControler,
@@ -176,16 +232,28 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               Divider(
                 color: Theme.of(context).dividerColor,
               ),
-              _showFavorites && _favoriteList.length <= 0
-                  ? Text('No hay ejercicios favoritos, ¡añade algunos!')
-                  : _listExercise.length <= 0
-                      ? Text('No se encontraron ejercicios')
+              _showFavorites &&
+                      _exerciseModelProvider.favoriteExerciseModelLenght <= 0
+                  ? _filtExercise
+                      ? Text(
+                          'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
+                      : Text('No hay ejercicios favoritos, ¡añade algunos!')
+                  : _listExercise.length <= 0 &&
+                              _exerciseModelProvider
+                                      .favoriteExerciseModelLenght <=
+                                  0 ||
+                          _filtExercise && _favoriteListFiltered.length <= 0
+                      ? Text(
+                          'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
                       : Expanded(
                           child: GridView.builder(
                             itemBuilder: (ctx, i) =>
                                 ChangeNotifierProvider.value(
                               value: _showFavorites
-                                  ? _favoriteList[i]
+                                  ? _filtExercise
+                                      ? _favoriteListFiltered[i]
+                                      : _exerciseModelProvider
+                                          .listFavoriteExerciseModel[i]
                                   : _listExercise[i],
                               child: ExerciseModelItem(),
                             ),
@@ -201,7 +269,8 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                               mainAxisSpacing: 15,
                             ),
                             itemCount: _showFavorites
-                                ? _favoriteList.length
+                                ? _exerciseModelProvider
+                                    .favoriteExerciseModelLenght
                                 : _listExercise.length,
                           ),
                         ),
@@ -214,8 +283,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
 
   void filterLists() {
     setState(() {
-      _favoriteList = _exerciseModelProvider
-          .filterFavoriteExerciseModel(_filterControler.text);
+      _filtExercise = true;
+      _favoriteListFiltered = _exerciseModelProvider
+          .filtFavoriteExerciseModel(_filterControler.text);
       _listExercise =
           _exerciseModelProvider.filterExerciseModel(_filterControler.text);
     });
@@ -239,6 +309,37 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               _showFavorites ? _showFavorites = false : _showFavorites = true;
             });
           }),
+    );
+  }
+
+  Widget _showRoutineExercise(Size size) {
+    return GestureDetector(
+      child: AnimatedContainer(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _showRoutineExercises
+            ? MediaQuery.of(context).orientation == Orientation.portrait
+                ? size.height * 0.1
+                : size.height * 0.2
+            : 0,
+        width: double.infinity
+        //  _showRoutineExercises
+        //     ? MediaQuery.of(context).orientation == Orientation.portrait
+        //         ? size.width * 0.95
+        //         : size.width * 1
+        //     : 0,
+      ),
+      onTap: () {
+        setState(() {
+          _showRoutineExercises
+              ? _showRoutineExercises = false
+              : _showRoutineExercises = true;
+        });
+      },
     );
   }
 }

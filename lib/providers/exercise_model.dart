@@ -31,9 +31,25 @@ class ExerciseModel with ChangeNotifier {
       if (f.contains(filter) || f.endsWith(filter)) contains = true;
     });
 
-     print(" BODY PART ENCONTRADA = $contains");
    
     return contains;
+  }
+
+  int get bodyPartsLenght {
+    return bodyParts.length;
+  }
+
+
+  String  get getBodyPartsString {
+
+     var txt = '';
+    bodyParts.forEach((f) {
+      txt += '-$f\n';
+    });
+    print(txt.toString());
+    return txt;
+
+    
   }
 
   void changeChosenStatus() {
@@ -51,7 +67,7 @@ class ExerciseModel with ChangeNotifier {
 }
 
 class ExerciseModelProvider with ChangeNotifier {
-  List<ExerciseModel> _favoriteList = [];
+
 
   List<ExerciseModel> _listExerciseModel = [
     ExerciseModel(
@@ -96,8 +112,19 @@ class ExerciseModelProvider with ChangeNotifier {
   }
 
   List<ExerciseModel> get listFavoriteExerciseModel {
-    return [..._favoriteList];
+    return _listExerciseModel.where((ex) => ex.isFavorite).toList();
   }
+
+   List<ExerciseModel> filtFavoriteExerciseModel (String filter){
+    return _listExerciseModel.where((exe) => exe.isFavorite && exe.name.contains(filter)|| exe.name.endsWith(filter) ||
+     exe.hasThatTypeOfBodyPart(filter)).toList();
+  }
+
+
+   int get favoriteExerciseModelLenght {
+    return _listExerciseModel.where((ex) => ex.isFavorite).toList().length;
+  }
+
 
   List<ExerciseModel> filterExerciseModel(String filter) {
     return _listExerciseModel
@@ -105,21 +132,9 @@ class ExerciseModelProvider with ChangeNotifier {
         .toList();
   }
 
-  List<ExerciseModel> filterFavoriteExerciseModel(String filter) {
-    return _favoriteList
-        .where((exe) =>
-            exe.name.contains(filter) || exe.name.endsWith(filter) || exe.hasThatTypeOfBodyPart(filter))
-        .toList();
+  ExerciseModel findExerciseByID (String id){
+    return _listExerciseModel.firstWhere((exe) => exe.id == id);
   }
 
-  void addExerciseToFavorite(ExerciseModel exerciseModel) {
-    final exercise = _favoriteList
-        .firstWhere((exe) => exe.id == exerciseModel.id, orElse: () => null);
 
-    if (exercise == null) {
-      _favoriteList.add(exerciseModel);
-    } else {
-      _favoriteList.removeWhere((exe) => exe.id == exerciseModel.id);
-    }
-  }
 }
