@@ -28,7 +28,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text('${routine.name}, ${DateFormat.yMMMd().format(routine.date)}'),
+            Text('${routine.name}, ${DateFormat.yMMMd().format(routine.creationDate)}'),
       ),
     
       /*
@@ -164,8 +164,8 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                     Navigator.of(context).pop();
 
                     isLoading = true;
-                    await routine
-                        .addExerciseToRoutine(_nameExerciseController.text);
+                    // await routine
+                    //     .addExerciseToRoutine(_nameExerciseController.text);
                   } catch (error) {
                     /*** 
                          *

@@ -10,6 +10,7 @@ import '../models/unity_weight.dart';
 
 class ExerciseUser with ChangeNotifier {
   final String routineID;
+  final String exerciseModelID;
   final String id;
   final String name;
   List<Series> listSeries = [];
@@ -18,15 +19,9 @@ class ExerciseUser with ChangeNotifier {
     return [...listSeries];
   }
 
-  ExerciseUser.fromDB({
-    @required this.id,
-    @required this.routineID,
-    @required this.name,
-    @required this.listSeries,
-  });
-
   ExerciseUser({
     @required this.id,
+    @required this.exerciseModelID,
     @required this.routineID,
     @required this.name,
   });

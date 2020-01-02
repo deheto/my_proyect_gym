@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class RoutinesProvider with ChangeNotifier {
+
   List<Routine> _routines = [];
 
   List<Routine> get copyRoutines {
@@ -41,13 +42,13 @@ class RoutinesProvider with ChangeNotifier {
 
     // print(json.decode(response.body));
 
-    data.forEach((routineID, routineData) {
-      tempList.add(Routine(
-        id: routineID,
-        date: DateTime.parse(routineData['date']),
-        name: routineData['name'],
-      ));
-    });
+    // data.forEach((routineID, routineData) {
+    //   tempList.add(Routine(
+    //     id: routineID,
+    //     creationDate: DateTime.parse(routineData['date']),
+    //     name: routineData['name'],
+    //   ));
+    // });
 
     await _fillRoutinesExercises(tempList);
 
@@ -72,21 +73,21 @@ class RoutinesProvider with ChangeNotifier {
     Routine routine;
     ExerciseUser exercise;
 
-    data.forEach((exerciseID, exerciseData) {
-      routine =
-          tempList.firstWhere((rout) => rout.id == exerciseData['routineID']);
+    // data.forEach((exerciseID, exerciseData) {
+    //   routine =
+    //       tempList.firstWhere((rout) => rout.id == exerciseData['routineID']);
 
-      if (routine != null) {
-        exercise = ExerciseUser(
-          id: exerciseID,
-          name: exerciseData['name'],
-          routineID: exerciseData['routineID'],
-        );
+    //   // if (routine != null) {
+    //   //   exercise = ExerciseUser(
+    //   //     id: exerciseID,
+    //   //     name: exerciseData['name'],
+    //   //     routineID: exerciseData['routineID'],
+    //   //   );
 
-        routine.fillExercises(exercise);
-        exercisesToFill.add(exercise);
-      }
-    });
+    //   //   routine.fillExercises(exercise);
+    //   //   exercisesToFill.add(exercise);
+    //   // }
+    // });
 
     await _fillExercises(exercisesToFill);
   }
@@ -126,31 +127,29 @@ class RoutinesProvider with ChangeNotifier {
     });
   }
 
-  Future<void> addRoutine(String name, DateTime date) async {
-    const url = 'https://gym-proyect.firebaseio.com/routines.json';
+  Future<void> addRoutine(Routine routine) async {
+    
+    
+    // const url = 'https://gym-proyect.firebaseio.com/routines.json';
 
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode(
-          {
-            'name': name,
-            'date': date.toIso8601String(),
-          },
-        ),
-      );
+    // try {
+    //   final response = await http.post(
+    //     url,
+    //     body: json.encode(
+    //       {
+    //         'name': routine.name,
+    //         'date': date.toIso8601String(),
+    //       },
+    //     ),
+    //   );
 
-      _routines.add(Routine(
-        date: date,
-        id: json.decode(response.body)['name'],
-        name: name,
-      ));
+      _routines.add(routine);
 
       notifyListeners();
-    } catch (error) {
-      print(error);
-      throw error;
-    }
+    // } catch (error) {
+    //   print(error);
+    //   throw error;
+    // }
   }
 
   int _getRoutineID(String routineID) {

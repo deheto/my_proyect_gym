@@ -61,30 +61,30 @@ class RoutinesPage extends StatelessWidget {
     );
   }
 
-  Future<void> _saveRoutine(BuildContext context) async {
-    try {
-      await Provider.of<RoutinesProvider>(context).addRoutine(
-        _nameRoutineController.text,
-        DateTime.now(),
-      );
-    } catch (error) {
-      await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Ocurrió un error.'),
-          content: Text(error.toString()),
-          actions: <Widget>[
-            FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                })
-          ],
-        ),
-      );
-    }
+  // Future<void> _saveRoutine(BuildContext context) async {
+  //   try {
+  //     await Provider.of<RoutinesProvider>(context).addRoutine(
+  //       _nameRoutineController.text,
+  //       DateTime.now(),
+  //     );
+  //   } catch (error) {
+  //     await showDialog(
+  //       context: context,
+  //       builder: (ctx) => AlertDialog(
+  //         title: Text('Ocurrió un error.'),
+  //         content: Text(error.toString()),
+  //         actions: <Widget>[
+  //           FlatButton(
+  //               child: Text('Okay'),
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               })
+  //         ],
+  //       ),
+  //     );
+  //   }
 
-  }
+  // }
 
   Future<void> _createRoutine(BuildContext context) {
     return showDialog(
@@ -106,7 +106,7 @@ class RoutinesPage extends StatelessWidget {
               FlatButton(
                 child: Text('Agregar'),
                 onPressed: () {
-                  _saveRoutine(context);
+                  // _saveRoutine(context);
                   Navigator.of(context).pop();
                 },
               ),

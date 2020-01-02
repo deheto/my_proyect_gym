@@ -1,3 +1,6 @@
+import '../providers/routine.dart';
+import 'package:uuid/uuid.dart';
+import '../providers/routines_provider.dart';
 import '../custom_widgets/exercise_model_item.dart';
 import '../providers/exercise_model.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +13,7 @@ class CreateRoutineScreen extends StatefulWidget {
 
 class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     with SingleTickerProviderStateMixin {
+  final uuid = Uuid();
   final _nameController = TextEditingController();
   final _filterControler = TextEditingController();
   var _showFavorites = false;
@@ -18,9 +22,11 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   List<ExerciseModel> _favoriteListFiltered;
   List<ExerciseModel> _listExercise;
   ExerciseModelProvider _exerciseModelProvider;
+  Routine _routine;
 
   @override
   void initState() {
+    _routine = Routine(id: uuid.v4(), creationDate: DateTime.now());
     _exerciseModelProvider =
         Provider.of<ExerciseModelProvider>(context, listen: false);
 
@@ -50,7 +56,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                   Icons.check,
                   color: Theme.of(context).accentColor,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  _createRoutine();
+                },
               ),
             ),
           )
@@ -104,7 +112,15 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
-
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    'Cantidad de ejercicios',
+                    style: Theme.of(context).textTheme.display1,
+                  ),
+                ),
+              ),
               Row(
                 children: <Widget>[
                   Flexible(
@@ -118,29 +134,18 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                   Flexible(
                     flex: 1,
                     child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showRoutineExercises
-                                ? _showRoutineExercises = false
-                                : _showRoutineExercises = true;
-                          });
-                        },
-                        child: Container(
-                          height: 30,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Theme.of(context).accentColor)),
-                          child: Center(
-                            child: Text(
-                              '10',
-                              style: TextStyle(
-                                  color: Theme.of(context).accentColor,
-                                  fontSize: 20),
-                            ),
-                          ),
-                        )),
+                      onTap: () {
+                        setState(() {
+                          _showRoutineExercises
+                              ? _showRoutineExercises = false
+                              : _showRoutineExercises = true;
+                        });
+                      },
+                      child: ChangeNotifierProvider.value(
+                        value: _routine,
+                        child: _ShowAmountExercises(),
+                      ),
+                    ),
                   ),
                   Flexible(
                     flex: 3,
@@ -152,15 +157,16 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                   ),
                 ],
               ),
-
-            
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
                 child: Center(child: _showRoutineExercise(deviceSize)),
               ),
-              _showRoutineExercises? Divider(
-                color: Theme.of(context).dividerColor,
-              ) : Center(),
+              _showRoutineExercises
+                  ? Divider(
+                      color: Theme.of(context).dividerColor,
+                    )
+                  : Center(),
               Row(
                 children: <Widget>[
                   Flexible(
@@ -168,8 +174,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                     child: Container(
                       height: 40,
                       width: deviceSize.width,
-                      margin:  EdgeInsets.symmetric(
-                          vertical: _showRoutineExercises ? 15.0 : 5, horizontal: 8.0),
+                      margin: EdgeInsets.symmetric(
+                          vertical: _showRoutineExercises ? 15.0 : 5,
+                          horizontal: 8.0),
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(8.0),
@@ -255,7 +262,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                                       : _exerciseModelProvider
                                           .listFavoriteExerciseModel[i]
                                   : _listExercise[i],
-                              child: ExerciseModelItem(),
+                              child: ExerciseModelItem(_routine),
                             ),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -315,24 +322,18 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   Widget _showRoutineExercise(Size size) {
     return GestureDetector(
       child: AnimatedContainer(
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeIn,
-        height: _showRoutineExercises
-            ? MediaQuery.of(context).orientation == Orientation.portrait
-                ? size.height * 0.1
-                : size.height * 0.2
-            : 0,
-        width: double.infinity
-        //  _showRoutineExercises
-        //     ? MediaQuery.of(context).orientation == Orientation.portrait
-        //         ? size.width * 0.95
-        //         : size.width * 1
-        //     : 0,
-      ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+          height: _showRoutineExercises
+              ? MediaQuery.of(context).orientation == Orientation.portrait
+                  ? size.height * 0.1
+                  : size.height * 0.2
+              : 0,
+          width: double.infinity),
       onTap: () {
         setState(() {
           _showRoutineExercises
@@ -340,6 +341,34 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
               : _showRoutineExercises = true;
         });
       },
+    );
+  }
+
+  void _createRoutine() {
+    Provider.of<RoutinesProvider>(context).addRoutine(_routine);
+  }
+}
+
+class _ShowAmountExercises extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white,
+        ),
+      ),
+      child: Consumer<Routine>(
+        builder: (ctx, routine, child) => Center(
+          child: Text(
+            '${routine.getExerciseListLenght()}',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
                 // * FOR TEXT INPUT STRINGS
                 display1: TextStyle(
                   fontFamily: 'Roboto',
-                  fontSize: 15,
+                  fontSize: 14,
                   color: Colors.white,
                 ),
                 body1: TextStyle(

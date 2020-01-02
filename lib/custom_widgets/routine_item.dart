@@ -31,7 +31,7 @@ class RoutineItem extends StatelessWidget {
             style: Theme.of(context).textTheme.title,
           ),
           subtitle: Text(
-            DateFormat.yMMMEd().format(loadedRoutine.date),
+            DateFormat.yMMMEd().format(loadedRoutine.creationDate),
           ),
           trailing: IconButton(
             icon: Icon(Icons.forward),
