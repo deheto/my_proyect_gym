@@ -46,6 +46,18 @@ class MyApp extends StatelessWidget {
                   fontSize: 14,
                   color: Colors.white,
                 ),
+
+                /**
+                 * 
+                 * * FOR SHOWING PREVIEW ROUTINE 
+                 *  */
+
+                   display4: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 30,
+                  color: Colors.white,
+                ),
+
                 body1: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 16,

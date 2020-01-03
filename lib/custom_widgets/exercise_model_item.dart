@@ -22,11 +22,9 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
   String exerciseID;
 
   @override
-  void initState() { 
-
-    exerciseID = uuid.v4(); 
+  void initState() {
+    exerciseID = uuid.v4();
     super.initState();
-    
   }
 
   double opacityLevel = 0.1;
@@ -41,7 +39,6 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
           child: Hero(
             tag: exerciseModel.id,
             child: Image.network(
-              
               exerciseModel.imageURL,
               fit: BoxFit.cover,
             ),
@@ -52,79 +49,79 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                opacityLevel = opacityLevel == 0.1 ? 1.0 : 0.1;
+                opacityLevel = exerciseModel.isChosen ?   0.1 : 1.0;
                 exerciseModel.changeChosenStatus();
               });
               _manageRoutineExercise(exerciseModel, widget._routine);
-                            Scaffold.of(context).hideCurrentSnackBar();
-                            Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                content: exerciseModel.isChosen
-                                    ? Text(
-                                        'Ejercicio añadido a la rutina.',
-                                      )
-                                    : Text(
-                                        'Ejercicio eliminado de la rutina.',
-                                      ),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                          child: GridTileBar(
-                            leading: Consumer<ExerciseModel>(
-                              builder: (ctx, exercise, _) => IconButton(
-                                icon: Icon(
-                                  exercise.isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                ),
-                                color: Theme.of(context).accentColor,
-                                onPressed: () {
-                                  
-                                  exercise.changeFavoriteStatus();
-              
-                                  Scaffold.of(context).hideCurrentSnackBar();
-                                  Scaffold.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: exercise.isFavorite
-                                          ? Text(
-                                              'Ejercicio añadido a favoritos.',
-                                            )
-                                          : Text(
-                                              'Ejercicio eliminado de favoritos.',
-                                            ),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            title: Text(
-                              exerciseModel.name,
-                              textAlign: TextAlign.center,
-                            ),
-                            //* SHOW INFO
-                            trailing: IconButton(
-                              icon: Icon(Icons.info),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                  ExerciseModelDetailsScreen.routeName,
-                                  arguments: exerciseModel.id,
-                                );
-                              },
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: exerciseModel.isChosen
+                      ? Text(
+                          'Ejercicio añadido a la rutina.',
+                        )
+                      : Text(
+                          'Ejercicio eliminado de la rutina.',
                         ),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: GridTileBar(
+              leading: Consumer<ExerciseModel>(
+                builder: (ctx, exercise, _) => IconButton(
+                  icon: Icon(
+                    exercise.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  color: Theme.of(context).accentColor,
+                  onPressed: () {
+                    exercise.changeFavoriteStatus();
+
+                    Scaffold.of(context).hideCurrentSnackBar();
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: exercise.isFavorite
+                            ? Text(
+                                'Ejercicio añadido a favoritos.',
+                              )
+                            : Text(
+                                'Ejercicio eliminado de favoritos.',
+                              ),
+                        duration: Duration(seconds: 1),
                       ),
-                    ),
+                    );
+                  },
+                ),
+              ),
+              title: Text(
+                exerciseModel.name,
+                textAlign: TextAlign.center,
+              ),
+              //* SHOW INFO
+              trailing: IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    ExerciseModelDetailsScreen.routeName,
+                    arguments: exerciseModel.id,
                   );
-                }
-              
-  void _manageRoutineExercise(ExerciseModel exerciseModel, Routine routine) {
-
-     exerciseModel.isChosen  ? routine.addExerciseToRoutine(exerciseModel, exerciseID) : 
-     routine.deleteExercise(exerciseID) ;
+                },
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
-}
 
+  void _manageRoutineExercise(ExerciseModel exerciseModel, Routine routine) {
+    exerciseModel.isChosen
+        ? routine.addExerciseToRoutine(exerciseModel, exerciseID)
+        : routine.deleteExercise(exerciseID);
+  }
+
+
+}

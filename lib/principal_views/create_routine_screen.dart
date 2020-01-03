@@ -1,3 +1,4 @@
+import '../custom_widgets/preview_description_routine.dart';
 import '../providers/routine.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/routines_provider.dart';
@@ -41,7 +42,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          Center(child: filterButton(context)),
+          Center(child: _filterButton(context)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Container(
@@ -64,7 +65,8 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
           )
         ],
         title: Text(
-          'Crea tu rutina',
+          'Crea tu rutina,',
+          style: Theme.of(context).textTheme.title,
         ),
         textTheme: Theme.of(context).appBarTheme.textTheme,
       ),
@@ -116,7 +118,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'Cantidad de ejercicios',
+                    'Cantidad de ejercicios agregados',
                     style: Theme.of(context).textTheme.display1,
                   ),
                 ),
@@ -143,7 +145,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                       },
                       child: ChangeNotifierProvider.value(
                         value: _routine,
-                        child: _ShowAmountExercises(),
+                        child: _showAmountExercises(context),
                       ),
                     ),
                   ),
@@ -160,13 +162,21 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-                child: Center(child: _showRoutineExercise(deviceSize)),
+                child: Center(
+                  child: ChangeNotifierProvider.value(
+                    value: _routine,
+                    child: _showRoutineExercise(deviceSize),
+                  ),
+                ),
               ),
               _showRoutineExercises
                   ? Divider(
                       color: Theme.of(context).dividerColor,
                     )
-                  : Center(),
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0),
+                      child: Center(),
+                    ),
               Row(
                 children: <Widget>[
                   Flexible(
@@ -195,7 +205,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                         onFieldSubmitted: (str) {
                           if (str.isEmpty) return;
 
-                          filterLists();
+                          _filterLists();
                         },
                         controller: _filterControler,
                         cursorWidth: 1,
@@ -230,7 +240,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                       onPressed: () {
                         if (_filterControler.text.isEmpty) return;
 
-                        filterLists();
+                        _filterLists();
                       },
                     ),
                   ),
@@ -242,15 +252,16 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
               _showFavorites &&
                       _exerciseModelProvider.favoriteExerciseModelLenght <= 0
                   ? _filtExercise
-                      ? Text(
+                      ? _showMessageContainer(
                           'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
-                      : Text('No hay ejercicios favoritos, ¡añade algunos!')
+                      : _showMessageContainer(
+                          'No hay ejercicios favoritos, ¡añade algunos!')
                   : _listExercise.length <= 0 &&
                               _exerciseModelProvider
                                       .favoriteExerciseModelLenght <=
                                   0 ||
                           _filtExercise && _favoriteListFiltered.length <= 0
-                      ? Text(
+                      ? _showMessageContainer(
                           'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
                       : Expanded(
                           child: GridView.builder(
@@ -288,7 +299,22 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     );
   }
 
-  void filterLists() {
+  Widget _showMessageContainer(String msg) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.45,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(msg),
+      ),
+    );
+  }
+
+  void _filterLists() {
     setState(() {
       _filtExercise = true;
       _favoriteListFiltered = _exerciseModelProvider
@@ -298,7 +324,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     });
   }
 
-  Widget filterButton(BuildContext context) {
+  Widget _filterButton(BuildContext context) {
     return Container(
       width: 40.0,
       height: 40.0,
@@ -320,45 +346,55 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   }
 
   Widget _showRoutineExercise(Size size) {
-    return GestureDetector(
-      child: AnimatedContainer(
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(8.0),
+    return AnimatedContainer(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+      height: _showRoutineExercises
+          ? MediaQuery.of(context).orientation == Orientation.portrait
+              ? size.height * 0.1 + _routine.getExerciseListLenght() * 10
+              : size.height * 0.2 + _routine.getExerciseListLenght() * 10
+          : 0,
+      width: double.infinity,
+      child: Consumer<Routine>(
+        builder: (ctx, rout, ch) => ListView.builder(
+          itemBuilder: (ctx, i) => Container(
+            height: 25,
+            margin: EdgeInsets.all(8),
+            child: FittedBox(
+              alignment: Alignment.centerLeft,
+              child:
+                  PreviewDescriptionRoutine(i, rout.getListExercises[i].name),
+            ),
           ),
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-          height: _showRoutineExercises
-              ? MediaQuery.of(context).orientation == Orientation.portrait
-                  ? size.height * 0.1
-                  : size.height * 0.2
-              : 0,
-          width: double.infinity),
-      onTap: () {
-        setState(() {
-          _showRoutineExercises
-              ? _showRoutineExercises = false
-              : _showRoutineExercises = true;
-        });
-      },
+          itemCount: _routine.getExerciseListLenght(),
+        ),
+      ),
     );
   }
 
-  void _createRoutine() {
-    Provider.of<RoutinesProvider>(context).addRoutine(_routine);
-  }
-}
+  /**
+   * 
+   * ChangeNotifierProvider.value(
+            value: _routine,
+            child:
+   */
 
-class _ShowAmountExercises extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  void _createRoutine() {
+    Provider.of<RoutinesProvider>(context, listen: false).addRoutine(_routine);
+  }
+
+  Widget _showAmountExercises(BuildContext context) {
     return Container(
       height: 40,
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white,
+          color: Theme.of(context).accentColor,
         ),
       ),
       child: Consumer<Routine>(

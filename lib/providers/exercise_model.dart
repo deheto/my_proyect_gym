@@ -31,7 +31,6 @@ class ExerciseModel with ChangeNotifier {
       if (f.contains(filter) || f.endsWith(filter)) contains = true;
     });
 
-   
     return contains;
   }
 
@@ -39,17 +38,13 @@ class ExerciseModel with ChangeNotifier {
     return bodyParts.length;
   }
 
-
-  String  get getBodyPartsString {
-
-     var txt = '';
+  String get getBodyPartsString {
+    var txt = '';
     bodyParts.forEach((f) {
       txt += '-$f\n';
     });
-    print(txt.toString());
+ 
     return txt;
-
-    
   }
 
   void changeChosenStatus() {
@@ -67,8 +62,6 @@ class ExerciseModel with ChangeNotifier {
 }
 
 class ExerciseModelProvider with ChangeNotifier {
-
-
   List<ExerciseModel> _listExerciseModel = [
     ExerciseModel(
       id: '1',
@@ -108,33 +101,61 @@ class ExerciseModelProvider with ChangeNotifier {
   ];
 
   List<ExerciseModel> get listExerciseModel {
+    return _listExerciseModel;
+  }
+
+  List<ExerciseModel> get copyListExerciseModel {
     return [..._listExerciseModel];
   }
 
   List<ExerciseModel> get listFavoriteExerciseModel {
-    return _listExerciseModel.where((ex) => ex.isFavorite).toList();
+    final List<ExerciseModel> filterList = [];
+
+    _listExerciseModel.forEach((exe) {
+      if (exe.isFavorite) {
+        filterList.add(exe);
+      }
+    });
+
+    return filterList;
   }
 
-   List<ExerciseModel> filtFavoriteExerciseModel (String filter){
-    return _listExerciseModel.where((exe) => exe.isFavorite && exe.name.contains(filter)|| exe.name.endsWith(filter) ||
-     exe.hasThatTypeOfBodyPart(filter)).toList();
-  }
 
-
-   int get favoriteExerciseModelLenght {
+  int get favoriteExerciseModelLenght {
     return _listExerciseModel.where((ex) => ex.isFavorite).toList().length;
   }
 
 
-  List<ExerciseModel> filterExerciseModel(String filter) {
-    return _listExerciseModel
-        .where((exe) => exe.name.contains(filter)|| exe.name.endsWith(filter) || exe.hasThatTypeOfBodyPart(filter))
-        .toList();
+  
+  List<ExerciseModel> filtFavoriteExerciseModel(String filter) {
+    final List<ExerciseModel> filterList = [];
+
+    _listExerciseModel.forEach((exe) {
+      if (exe.isFavorite && exe.name.contains(filter) ||
+          exe.name.endsWith(filter) ||
+          exe.hasThatTypeOfBodyPart(filter)) {
+        filterList.add(exe);
+      }
+    });
+
+    return filterList;
   }
 
-  ExerciseModel findExerciseByID (String id){
+  List<ExerciseModel> filterExerciseModel(String filter) {
+    final List<ExerciseModel> filterList = [];
+
+    _listExerciseModel.forEach((exe) {
+      if (exe.name.contains(filter) ||
+          exe.name.endsWith(filter) ||
+          exe.hasThatTypeOfBodyPart(filter)) {
+        filterList.add(exe);
+      }
+    });
+
+    return filterList;
+  }
+
+  ExerciseModel findExerciseByID(String id) {
     return _listExerciseModel.firstWhere((exe) => exe.id == id);
   }
-
-
 }
