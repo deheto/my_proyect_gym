@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.grey[800],
           accentColor: Colors.lightBlue,
-         dividerColor: Colors.grey[800],
-         
+          dividerColor: Colors.grey[800],
+
           scaffoldBackgroundColor: Colors.grey[900],
           // * TEXT STLYE
           textTheme: ThemeData.light().textTheme.copyWith(
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                   fontSize: 20,
                   color: Colors.white,
                 ),
-              
+
                 // * FOR TEXT INPUT STRINGS
                 display1: TextStyle(
                   fontFamily: 'Roboto',
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
                  * * FOR SHOWING PREVIEW ROUTINE 
                  *  */
 
-                   display4: TextStyle(
+                display4: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 30,
                   color: Colors.white,
@@ -63,8 +63,18 @@ class MyApp extends StatelessWidget {
                   fontSize: 16,
                   color: Colors.white,
                 ),
+
+                /**
+                 * *FOR PARAGRAPH
+                 */
+                body2: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
-              
+
           // * APPBAR STYLE
           appBarTheme: AppBarTheme(
             color: Colors.grey[800],
@@ -82,7 +92,8 @@ class MyApp extends StatelessWidget {
           PrincipalPage.routeName: (ctx) => PrincipalPage(),
           RoutinesPage.routeName: (ctx) => RoutinesPage(),
           RoutineDetailsPage.routeName: (ctx) => RoutineDetailsPage(),
-           ExerciseModelDetailsScreen.routeName: (ctx) => ExerciseModelDetailsScreen(),
+          ExerciseModelDetailsScreen.routeName: (ctx) =>
+              ExerciseModelDetailsScreen(),
         },
       ),
     );

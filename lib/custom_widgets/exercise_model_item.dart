@@ -13,7 +13,7 @@ class ExerciseModelItem extends StatefulWidget {
 
   final Routine _routine;
 
-  ExerciseModelItem(this._routine);
+  ExerciseModelItem(this._routine );
 }
 
 class _ExerciseModelItemState extends State<ExerciseModelItem> {
@@ -23,6 +23,7 @@ class _ExerciseModelItemState extends State<ExerciseModelItem> {
 
   @override
   void initState() {
+
     exerciseID = uuid.v4();
     super.initState();
   }

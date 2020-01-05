@@ -1,4 +1,4 @@
-import '../custom_widgets/preview_description_routine.dart';
+import '../principal_views/principal_screen.dart';
 import '../providers/routine.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/routines_provider.dart';
@@ -19,6 +19,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   final _filterControler = TextEditingController();
   var _showFavorites = false;
   var _filtExercise = false;
+  var _nameIncorrect = false;
   var _showRoutineExercises = false;
   List<ExerciseModel> _favoriteListFiltered;
   List<ExerciseModel> _listExercise;
@@ -34,6 +35,13 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     _listExercise = _exerciseModelProvider.listExerciseModel;
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _filterControler.dispose();
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -65,8 +73,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
           )
         ],
         title: Text(
-          'Crea tu rutina,',
-          style: Theme.of(context).textTheme.title,
+          'Crea tu rutina',
         ),
         textTheme: Theme.of(context).appBarTheme.textTheme,
       ),
@@ -85,24 +92,20 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                   controller: _nameController,
                   cursorColor: Colors.white,
                   style: Theme.of(context).textTheme.title,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Ingrese el nombre de la rutina';
-                    }
-                    return null;
-                  },
                   cursorWidth: 1,
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                       borderSide: BorderSide(
-                        color: Theme.of(context).accentColor,
+                        color: _nameIncorrect
+                            ? Colors.red
+                            : Theme.of(context).accentColor,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                       borderSide: BorderSide(
-                        color: Colors.white,
+                        color: _nameIncorrect ? Colors.red : Colors.white,
                       ),
                     ),
                     labelText: '  Nombre de la rutina',
@@ -145,7 +148,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                       },
                       child: ChangeNotifierProvider.value(
                         value: _routine,
-                        child: _showAmountExercises(context),
+                        child: _showAmountExercises(),
                       ),
                     ),
                   ),
@@ -263,35 +266,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                           _filtExercise && _favoriteListFiltered.length <= 0
                       ? _showMessageContainer(
                           'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
-                      : Expanded(
-                          child: GridView.builder(
-                            itemBuilder: (ctx, i) =>
-                                ChangeNotifierProvider.value(
-                              value: _showFavorites
-                                  ? _filtExercise
-                                      ? _favoriteListFiltered[i]
-                                      : _exerciseModelProvider
-                                          .listFavoriteExerciseModel[i]
-                                  : _listExercise[i],
-                              child: ExerciseModelItem(_routine),
-                            ),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 1,
-                              childAspectRatio:
-                                  MediaQuery.of(context).orientation ==
-                                          Orientation.portrait
-                                      ? 10
-                                      : 18,
-                              crossAxisSpacing: 0,
-                              mainAxisSpacing: 15,
-                            ),
-                            itemCount: _showFavorites
-                                ? _exerciseModelProvider
-                                    .favoriteExerciseModelLenght
-                                : _listExercise.length,
-                          ),
-                        ),
+                      : _showListOfExercises(),
             ],
           ),
         ),
@@ -299,23 +274,47 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     );
   }
 
-  Widget _showMessageContainer(String msg) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.45,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(15.0),
+  Widget _showListOfExercises() {
+    return Expanded(
+      child: GridView.builder(
+        itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+          value: _showFavorites
+              ? _filtExercise
+                  ? _favoriteListFiltered[i]
+                  : _exerciseModelProvider.listFavoriteExerciseModel[i]
+              : _listExercise[i],
+          child: ExerciseModelItem(_routine),
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 1,
+          childAspectRatio:
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? 10
+                  : 18,
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 15,
+        ),
+        itemCount: _showFavorites
+            ? _exerciseModelProvider.favoriteExerciseModelLenght
+            : _listExercise.length,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(msg),
+    );
+  }
+
+  Widget _showMessageContainer(String msg) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Text(
+          msg,
+          style: Theme.of(context).textTheme.body2,
+        ),
       ),
     );
   }
 
   void _filterLists() {
-    setState(() {
+    setState(()  {
       _filtExercise = true;
       _favoriteListFiltered = _exerciseModelProvider
           .filtFavoriteExerciseModel(_filterControler.text);
@@ -346,29 +345,26 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   }
 
   Widget _showRoutineExercise(Size size) {
-    return AnimatedContainer(
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeIn,
-      height: _showRoutineExercises
-          ? MediaQuery.of(context).orientation == Orientation.portrait
-              ? size.height * 0.1 + _routine.getExerciseListLenght() * 10
-              : size.height * 0.2 + _routine.getExerciseListLenght() * 10
-          : 0,
-      width: double.infinity,
-      child: Consumer<Routine>(
-        builder: (ctx, rout, ch) => ListView.builder(
-          itemBuilder: (ctx, i) => Container(
-            height: 25,
-            margin: EdgeInsets.all(8),
-            child: FittedBox(
-              alignment: Alignment.centerLeft,
-              child:
-                  PreviewDescriptionRoutine(i, rout.getListExercises[i].name),
-            ),
+    var numberExercise = 0;
+    return Consumer<Routine>(
+      builder: (ctx, rout, ch) => AnimatedContainer(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _showRoutineExercises
+            ? MediaQuery.of(context).orientation == Orientation.portrait
+                ? size.height * 0.1 + 30
+                : size.height * 0.2 + 30
+            : 0,
+        width: double.infinity,
+        child: ListView.builder(
+          itemBuilder: (ctx, i) => ListTile(
+            leading: Text('${numberExercise + 1}'),
+            subtitle: Text("asdasdadas"),
+            title: Text(rout.getListExercises[i].name),
           ),
           itemCount: _routine.getExerciseListLenght(),
         ),
@@ -376,6 +372,18 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     );
   }
 
+  // child: ListView.builder(
+  //   itemBuilder: (ctx, i) => Container(
+  //     height: 25,
+  //     margin: EdgeInsets.all(8),
+  //     child: FittedBox(
+  //       alignment: Alignment.centerLeft,
+  //       child:
+  //           PreviewDescriptionRoutine(i, rout.getListExercises[i].name),
+  //     ),
+  //   ),
+  //   itemCount: _routine.getExerciseListLenght(),
+  // ),
   /**
    * 
    * ChangeNotifierProvider.value(
@@ -384,10 +392,55 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
    */
 
   void _createRoutine() {
-    Provider.of<RoutinesProvider>(context, listen: false).addRoutine(_routine);
+    if (_nameController.text.isNotEmpty) {
+      setState(() {
+        _nameIncorrect = false;
+      });
+
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: Theme.of(context).primaryColor,
+          title: Center(
+            child: Text(
+              '¿Todo listo?',
+              style: Theme.of(context).textTheme.title,
+            ),
+          ),
+          content: Text(
+            '¿Ya añadiste de agregar todos los ejercicios?',
+            style: Theme.of(context).textTheme.body1,
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                '¡Me faltan algunos!',
+                style: Theme.of(context).textTheme.display1,
+              ),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+            FlatButton(
+              child: Text(
+                '¡Sí, ya terminé!',
+                style: Theme.of(context).textTheme.display1,
+              ),
+              onPressed: () async {
+                await Provider.of<RoutinesProvider>(context, listen: false)
+                    .addRoutine(_routine);
+                Navigator.of(context).pushNamed(PrincipalPage.routeName);
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      setState(() {
+        _nameIncorrect = true;
+      });
+    }
   }
 
-  Widget _showAmountExercises(BuildContext context) {
+  Widget _showAmountExercises() {
     return Container(
       height: 40,
       decoration: BoxDecoration(

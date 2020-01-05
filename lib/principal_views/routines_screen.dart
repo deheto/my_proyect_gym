@@ -19,7 +19,7 @@ class RoutinesPage extends StatelessWidget {
     return Scaffold(
       body: FutureBuilder(
           future: Provider.of<RoutinesProvider>(context, listen: false)
-              .getRoutinesFromFireBase(),
+              .getRoutinesFromDB(),
           builder: (ctx, dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());

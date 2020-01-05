@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class RoutinesProvider with ChangeNotifier {
-
   List<Routine> _routines = [];
 
   List<Routine> get copyRoutines {
@@ -26,34 +25,34 @@ class RoutinesProvider with ChangeNotifier {
     return _routines.firstWhere((rout) => rout.id == id);
   }
 
-  Future<void> getRoutinesFromFireBase() async {
-    const url = 'https://gym-proyect.firebaseio.com/routines.json';
+  Future<void> getRoutinesFromDB() async {
+    // const url = 'https://gym-proyect.firebaseio.com/routines.json';
 
-    print('LLAMA AL METODO 2 VECES');
+    // print('LLAMA AL METODO 2 VECES');
 
-    final response = await http.get(url);
+    // final response = await http.get(url);
 
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    final List<Routine> tempList = [];
+    // final data = json.decode(response.body) as Map<String, dynamic>;
+    // final List<Routine> tempList = [];
 
-    if (data == null) {
-      throw HttpException('No hay rutinas creadas.');
-    }
+    // if (data == null) {
+    //   throw HttpException('No hay rutinas creadas.');
+    // }
 
-    // print(json.decode(response.body));
+    // // print(json.decode(response.body));
 
-    // data.forEach((routineID, routineData) {
-    //   tempList.add(Routine(
-    //     id: routineID,
-    //     creationDate: DateTime.parse(routineData['date']),
-    //     name: routineData['name'],
-    //   ));
-    // });
+    // // data.forEach((routineID, routineData) {
+    // //   tempList.add(Routine(
+    // //     id: routineID,
+    // //     creationDate: DateTime.parse(routineData['date']),
+    // //     name: routineData['name'],
+    // //   ));
+    // // });
 
-    await _fillRoutinesExercises(tempList);
+    // // await _fillRoutinesExercises(tempList);
 
-    _routines = tempList;
-    notifyListeners();
+    // _routines = tempList;
+    // notifyListeners();
   }
 
   Future<void> _fillRoutinesExercises(List<Routine> tempList) async {
@@ -117,19 +116,18 @@ class RoutinesProvider with ChangeNotifier {
 
         exercise.addSerie(
           Series(
-              exerciseID: serieData['exerciseID'],
-              id: serieID,
-              weigth: double.parse(serieData['weigth']),
-              repTotal: int.parse(serieData['repTotal']),
-              unityWeight: unityWeight),
+            exerciseID: serieData['exerciseID'],
+            id: serieID,
+            weigth: double.parse(serieData['weigth']),
+            repTotal: int.parse(serieData['repTotal']),
+            unityWeight: unityWeight,
+          ),
         );
       }
     });
   }
 
   Future<void> addRoutine(Routine routine) async {
-    
-    
     // const url = 'https://gym-proyect.firebaseio.com/routines.json';
 
     // try {
@@ -143,9 +141,9 @@ class RoutinesProvider with ChangeNotifier {
     //     ),
     //   );
 
-      _routines.add(routine);
+    _routines.add(routine);
 
-      notifyListeners();
+    notifyListeners();
     // } catch (error) {
     //   print(error);
     //   throw error;
