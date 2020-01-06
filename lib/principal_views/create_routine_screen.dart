@@ -20,7 +20,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   var _showFavorites = false;
   var _filtExercise = false;
   var _nameIncorrect = false;
-  var _showRoutineExercises = false;
+  // var _showRoutineExercises = false;
   List<ExerciseModel> _favoriteListFiltered;
   List<ExerciseModel> _listExercise;
   ExerciseModelProvider _exerciseModelProvider;
@@ -50,12 +50,11 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          Center(child: _filterButton(context)),
+          Center(child: _filterButton()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Container(
               width: 40.0,
-              height: 40.0,
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 shape: BoxShape.circle,
@@ -77,205 +76,150 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
         ),
         textTheme: Theme.of(context).appBarTheme.textTheme,
       ),
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: deviceSize.height),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        children: <Widget>[
+          Container(
+            height: 40,
+            margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
+            child: TextFormField(
+              controller: _nameController,
+              cursorColor: Colors.white,
+              style: Theme.of(context).textTheme.title,
+              cursorWidth: 1,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(
+                    color: _nameIncorrect
+                        ? Colors.red
+                        : Theme.of(context).accentColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  borderSide: BorderSide(
+                    color: _nameIncorrect ? Colors.red : Colors.white,
+                  ),
+                ),
+                labelText: '  Nombre de la rutina',
+                labelStyle: Theme.of(context).textTheme.display1,
+              ),
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          Divider(
+            color: Theme.of(context).dividerColor,
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
+            child: Center(
+              child: ChangeNotifierProvider.value(
+                value: _routine,
+                child: _showRoutineExercise(deviceSize),
+              ),
+            ),
+          ),
+          Divider(
+            color: Theme.of(context).dividerColor,
+          ),
+          Row(
             children: <Widget>[
-              Container(
-                height: 40,
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
-                child: TextFormField(
-                  controller: _nameController,
-                  cursorColor: Colors.white,
-                  style: Theme.of(context).textTheme.title,
-                  cursorWidth: 1,
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      borderSide: BorderSide(
-                        color: _nameIncorrect
-                            ? Colors.red
-                            : Theme.of(context).accentColor,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      borderSide: BorderSide(
-                        color: _nameIncorrect ? Colors.red : Colors.white,
-                      ),
-                    ),
-                    labelText: '  Nombre de la rutina',
-                    labelStyle: Theme.of(context).textTheme.display1,
+              Flexible(
+                flex: 1,
+                child: Container(
+                  height: 40,
+                  width: deviceSize.width,
+                  margin: EdgeInsets.symmetric(
+                      vertical: _routine.getExerciseListLenght() > 0 ? 15.0 : 5,
+                      horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Text(
-                    'Cantidad de ejercicios agregados',
-                    style: Theme.of(context).textTheme.display1,
-                  ),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Flexible(
-                    flex: 3,
-                    child: Container(
-                      height: 0.5,
-                      width: double.infinity,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showRoutineExercises
-                              ? _showRoutineExercises = false
-                              : _showRoutineExercises = true;
-                        });
-                      },
-                      child: ChangeNotifierProvider.value(
-                        value: _routine,
-                        child: _showAmountExercises(),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 3,
-                    child: Container(
-                      height: 0.5,
-                      width: double.infinity,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
-                child: Center(
-                  child: ChangeNotifierProvider.value(
-                    value: _routine,
-                    child: _showRoutineExercise(deviceSize),
-                  ),
-                ),
-              ),
-              _showRoutineExercises
-                  ? Divider(
-                      color: Theme.of(context).dividerColor,
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 5.0),
-                      child: Center(),
-                    ),
-              Row(
-                children: <Widget>[
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      height: 40,
-                      width: deviceSize.width,
-                      margin: EdgeInsets.symmetric(
-                          vertical: _showRoutineExercises ? 15.0 : 5,
-                          horizontal: 8.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: TextFormField(
-                        onChanged: (str) {
-                          if (str.isNotEmpty) return;
-                          print('EL STRING SE VACIOOO!!');
+                  child: TextFormField(
+                    onChanged: (str) {
+                      if (str.isNotEmpty) return;
+                      print('EL STRING SE VACIOOO!!');
 
-                          setState(() {
-                            _filtExercise = false;
-                            _listExercise =
-                                _exerciseModelProvider.listExerciseModel;
-                          });
-                        },
-                        onFieldSubmitted: (str) {
-                          if (str.isEmpty) return;
+                      setState(() {
+                        _filtExercise = false;
+                        _listExercise =
+                            _exerciseModelProvider.listExerciseModel;
+                      });
+                    },
+                    onFieldSubmitted: (str) {
+                      if (str.isEmpty) return;
 
-                          _filterLists();
-                        },
-                        controller: _filterControler,
-                        cursorWidth: 1,
-                        cursorColor: Colors.white,
-                        style: Theme.of(context).textTheme.title,
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            borderSide: BorderSide(
-                              color: Colors.white,
-                            ),
-                          ),
-                          labelText: '  Ejercicios o Parte del Cuerpo',
-                          labelStyle: Theme.of(context).textTheme.display1,
+                      _filterLists();
+                    },
+                    controller: _filterControler,
+                    cursorWidth: 1,
+                    cursorColor: Colors.white,
+                    style: Theme.of(context).textTheme.title,
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).accentColor,
                         ),
                       ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 0,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).accentColor,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
                       ),
-                      onPressed: () {
-                        if (_filterControler.text.isEmpty) return;
-
-                        _filterLists();
-                      },
+                      labelText: '  Ejercicios o Parte del Cuerpo',
+                      labelStyle: Theme.of(context).textTheme.display1,
                     ),
                   ),
-                ],
+                ),
               ),
-              Divider(
-                color: Theme.of(context).dividerColor,
+              Flexible(
+                flex: 0,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).accentColor,
+                  ),
+                  onPressed: () {
+                    if (_filterControler.text.isEmpty) return;
+
+                    _filterLists();
+                  },
+                ),
               ),
-              _showFavorites &&
-                      _exerciseModelProvider.favoriteExerciseModelLenght <= 0
-                  ? _filtExercise
-                      ? _showMessageContainer(
-                          'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
-                      : _showMessageContainer(
-                          'No hay ejercicios favoritos, ¡añade algunos!')
-                  : _listExercise.length <= 0 &&
-                              _exerciseModelProvider
-                                      .favoriteExerciseModelLenght <=
-                                  0 ||
-                          _filtExercise && _favoriteListFiltered.length <= 0
-                      ? _showMessageContainer(
-                          'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
-                      : _showListOfExercises(),
             ],
           ),
-        ),
+          Divider(
+            color: Theme.of(context).dividerColor,
+          ),
+          _showFavorites &&
+                  _exerciseModelProvider.favoriteExerciseModelLenght <= 0
+              ? _filtExercise
+                  ? _showMessageContainer(
+                      'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
+                  : _showMessageContainer(
+                      'No hay ejercicios favoritos, ¡añade algunos!')
+              : _listExercise.length <= 0 &&
+                          _exerciseModelProvider.favoriteExerciseModelLenght <=
+                              0 ||
+                      _filtExercise && _favoriteListFiltered.length <= 0
+                  ? _showMessageContainer(
+                      'No se encontraron ejercicios con base a lo buscado, ¡intenta de nuevo!')
+                  : _showListOfExercises(deviceSize),
+        ],
       ),
     );
   }
 
-  Widget _showListOfExercises() {
-    return Expanded(
+  Widget _showListOfExercises(Size deviceSize) {
+    return Container(
+      height: deviceSize.height / 2,
       child: GridView.builder(
         itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
           value: _showFavorites
@@ -314,7 +258,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   }
 
   void _filterLists() {
-    setState(()  {
+    setState(() {
       _filtExercise = true;
       _favoriteListFiltered = _exerciseModelProvider
           .filtFavoriteExerciseModel(_filterControler.text);
@@ -323,7 +267,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
     });
   }
 
-  Widget _filterButton(BuildContext context) {
+  Widget _filterButton() {
     return Container(
       width: 40.0,
       height: 40.0,
@@ -345,7 +289,6 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
   }
 
   Widget _showRoutineExercise(Size size) {
-    var numberExercise = 0;
     return Consumer<Routine>(
       builder: (ctx, rout, ch) => AnimatedContainer(
         decoration: BoxDecoration(
@@ -354,42 +297,57 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
         ),
         duration: Duration(milliseconds: 300),
         curve: Curves.easeIn,
-        height: _showRoutineExercises
+        height: _routine.getExerciseListLenght() > 0
             ? MediaQuery.of(context).orientation == Orientation.portrait
                 ? size.height * 0.1 + 30
                 : size.height * 0.2 + 30
             : 0,
         width: double.infinity,
         child: ListView.builder(
-          itemBuilder: (ctx, i) => ListTile(
-            leading: Text('${numberExercise + 1}'),
-            subtitle: Text("asdasdadas"),
-            title: Text(rout.getListExercises[i].name),
+          itemBuilder: (ctx, i) => Card(
+            color: Colors.grey[700],
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10.0, 3.0, 2.0, 5.0),
+              child: ListTile(
+                leading: Container(
+                  width: 40.0,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).accentColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${1 + i}',
+                      style: Theme.of(context).textTheme.body1,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  rout.getListExercises[i].name,
+                  style: Theme.of(context).textTheme.display1,
+                ),
+                trailing: FlatButton(
+                  child: Icon(
+                    Icons.delete,
+                    color: Theme.of(context).accentColor,
+                  ),
+                  onPressed: () {
+                             _exerciseModelProvider.unChosenExercise(
+                        rout.getListExercises[i].exerciseModelID);
+          
+                    setState(() {
+                      _routine.removeExercise(i);
+                    });
+                   },
+                ),
+              ),
+            ),
           ),
           itemCount: _routine.getExerciseListLenght(),
         ),
       ),
     );
   }
-
-  // child: ListView.builder(
-  //   itemBuilder: (ctx, i) => Container(
-  //     height: 25,
-  //     margin: EdgeInsets.all(8),
-  //     child: FittedBox(
-  //       alignment: Alignment.centerLeft,
-  //       child:
-  //           PreviewDescriptionRoutine(i, rout.getListExercises[i].name),
-  //     ),
-  //   ),
-  //   itemCount: _routine.getExerciseListLenght(),
-  // ),
-  /**
-   * 
-   * ChangeNotifierProvider.value(
-            value: _routine,
-            child:
-   */
 
   void _createRoutine() {
     if (_nameController.text.isNotEmpty) {
@@ -438,26 +396,5 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
         _nameIncorrect = true;
       });
     }
-  }
-
-  Widget _showAmountExercises() {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Theme.of(context).accentColor,
-        ),
-      ),
-      child: Consumer<Routine>(
-        builder: (ctx, routine, child) => Center(
-          child: Text(
-            '${routine.getExerciseListLenght()}',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-      ),
-    );
   }
 }

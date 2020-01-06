@@ -73,7 +73,7 @@ class Routine with ChangeNotifier {
     // } catch (error) {}
   }
 
-  Future<void> removeExercise(String idExercise) async {
+  Future<void> removeExerciseFromDB(String idExercise) async {
     final url = 'https://gym-proyect.firebaseio.com/exercises/$idExercise.json';
 
     final existingExerciseIndex = _getExerciseIndex(idExercise);
@@ -103,8 +103,13 @@ class Routine with ChangeNotifier {
 
     // existingExercise = null;
   }
+    //Deletes the exercise from routine 
+  void removeExercise(int i){ 
+    _exercises.removeAt(i);
+    notifyListeners();
+  }
 
-  deleteExercise(String exerciseID) {
+  void deleteExercise(String exerciseID) {
 
     _exercises.removeWhere((exe) => exe.id == exerciseID);
   

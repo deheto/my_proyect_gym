@@ -84,7 +84,7 @@ class RoutinesProvider with ChangeNotifier {
     //   //   );
 
     //   //   routine.fillExercises(exercise);
-    //   //   exercisesToFill.add(exercise);
+    //   //   exercisesaToFill.add(exercise);
     //   // }
     // });
 

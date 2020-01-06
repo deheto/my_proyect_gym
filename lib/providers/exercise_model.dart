@@ -158,4 +158,14 @@ class ExerciseModelProvider with ChangeNotifier {
   ExerciseModel findExerciseByID(String id) {
     return _listExerciseModel.firstWhere((exe) => exe.id == id);
   }
+
+  void unChosenExercise(String id){
+
+      final exercise = findExerciseByID(id);
+        print("EL EJERCICIO  TIENE QUE CAMBIAR " + exercise.id );
+
+      exercise.changeChosenStatus();
+   
+  }
+
 }

@@ -117,7 +117,7 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
                 onPressed: () async {
                   try {
 
-                  await  routine.removeExercise(routine.getListExercises[index].id);
+                  await  routine.removeExerciseFromDB(routine.getListExercises[index].id);
 
                     setState(() {
                           copyRoutine.removeAt(index);

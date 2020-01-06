@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           value: RoutinesProvider(),
         ),
         ChangeNotifierProvider.value(
-          value: (ExerciseModelProvider()),
+          value: ExerciseModelProvider(),
         )
       ],
       child: MaterialApp(
@@ -30,8 +30,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.grey[800],
           accentColor: Colors.lightBlue,
           dividerColor: Colors.grey[800],
-
-          scaffoldBackgroundColor: Colors.grey[900],
+           scaffoldBackgroundColor: Colors.grey[900],
           // * TEXT STLYE
           textTheme: ThemeData.light().textTheme.copyWith(
                 title: TextStyle(
