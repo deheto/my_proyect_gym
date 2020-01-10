@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "906264579494",
+    "firebase_url": "https://mylittleprogress-d488d.firebaseio.com",
+    "project_id": "mylittleprogress-d488d",
+    "storage_bucket": "mylittleprogress-d488d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:906264579494:android:a74f32ed64f76f68501367",
+        "android_client_info": {
+          "package_name": "com.deheto.mylittleprogress"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "906264579494-hi37qc34g7foirk7lhj6uvoog3qu4llc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deheto.mylittleprogress",
+            "certificate_hash": "83490c9f258774276b566d459bc3b562ff2c5941"
+          }
+        },
+        {
+          "client_id": "906264579494-7i0fn158mr9epkf24bqfrlps2mkp3dfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqXIiQp6cIrgCGRqbOcsJCbENplsPlEmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "906264579494-7i0fn158mr9epkf24bqfrlps2mkp3dfb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

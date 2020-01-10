@@ -123,9 +123,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
               ),
             ),
           ),
-          Divider(
-            color: Theme.of(context).dividerColor,
-          ),
+      
           Row(
             children: <Widget>[
               Flexible(
@@ -305,7 +303,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
         width: double.infinity,
         child: ListView.builder(
           itemBuilder: (ctx, i) => Card(
-            color: Colors.grey[700],
+            color: Theme.of(context).cardColor,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(10.0, 3.0, 2.0, 5.0),
               child: ListTile(
@@ -332,13 +330,13 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
                     color: Theme.of(context).accentColor,
                   ),
                   onPressed: () {
-                             _exerciseModelProvider.unChosenExercise(
+                    _exerciseModelProvider.unChosenExercise(
                         rout.getListExercises[i].exerciseModelID);
-          
+
                     setState(() {
                       _routine.removeExercise(i);
                     });
-                   },
+                  },
                 ),
               ),
             ),
@@ -366,7 +364,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen>
             ),
           ),
           content: Text(
-            '¿Ya añadiste de agregar todos los ejercicios?',
+            '¿Ya añadiste todos los ejercicios?',
             style: Theme.of(context).textTheme.body1,
           ),
           actions: <Widget>[
